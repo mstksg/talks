@@ -1,12 +1,15 @@
-talks
+Talks
 =====
 
-Collection of slides, notes, and posters for public talks I've given.
+Collection of slides, notes, and posters for public talks I've given, annotated
+when possible.
 
 2016
 ----
 
 ### LambdaConf 2016
+
+*(Annotated)*
 
 Functional programming conference in Boulder, CO.  Talk was on applications of
 the Functor Design Pattern and Comonads/Cokleisli Composition to Digital Image
@@ -23,6 +26,8 @@ and the California Drought for the winter of 2015-2016.
 ----
 
 ### Chapman University Computational Sciences Graduate Conference (CSCG) 2015
+
+*(Annotated)*
 
 Graduate research conference for Chapman University's Computational and Data
 Science program.  Presented on applications of functors and comonads in
