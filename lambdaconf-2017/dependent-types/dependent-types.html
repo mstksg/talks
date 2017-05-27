@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Justin Le https://blog.jle.im (justin@jle.im)">
+  <title>Practical Dependent Types: Type-Safe Neural Networks</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/beige.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+  <h1 class="title">Practical Dependent Types: Type-Safe Neural Networks</h1>
+  <p class="author">Justin Le https://blog.jle.im (justin@jle.im)</p>
+  <p class="date">Lambdaconf 2017, May 27, 2017</p>
+</section>
+
+<section id="preface" class="slide level2">
+<h2>Preface</h2>
+<p>Slide available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html</a>.</p>
+<p>Exercises we will be doing available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.hs" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.hs</a>.</p>
+<p>Libraries required: (available on Hackage) - <em>hmatrix</em> - <em>singletons</em> - <em>MonadRandom</em></p>
+<p>GHC 8.x assumed.</p>
+</section>
+<section id="the-big-question" class="slide level2">
+<h2>The Big Question</h2>
+<p>The big question of Haskell: <em>What can types do for us?</em></p>
+<div class="fragment">
+<p>Dependent types are simply the extension of this question, pushing the power of types further.</p>
+</div>
+</section>
+<section id="artificial-neural-networks" class="slide level2">
+<h2>Artificial Neural Networks</h2>
+<figure>
+<img src="img/ffneural.png" title="Feed-forward ANN architecture" alt="Feed-forward ANN architecture" /><figcaption>Feed-forward ANN architecture</figcaption>
+</figure>
+</section>
+<section id="parameterized-functions" class="slide level2">
+<h2>Parameterized functions</h2>
+<p>Each layer receives an input vector, <span class="math inline"><strong>x</strong> : ℝ<sup><em>n</em></sup></span>, and produces an output <span class="math inline"><strong>y</strong> : ℝ<sup><em>m</em></sup></span>.</p>
+<div class="fragment">
+<p>They are parameterized by a weight matrix <span class="math inline"><em>W</em> : ℝ<sup><em>m</em> × <em>n</em></sup></span> (an <span class="math inline"><em>m</em> × <em>n</em></span> matrix) and a bias vector <span class="math inline"><strong>b</strong> : ℝ<sup><em>m</em></sup></span>, and the result is:</p>
+<p><br /><span class="math display"><strong>y</strong> = <em>f</em>(<em>W</em><strong>x</strong> + <strong>b</strong>)</span><br /></p>
+<p>Where <span class="math inline"><em>f</em></span> is some (differentiable) activation function.</p>
+<p>A neural network would take a vector through many layers.</p>
+</div>
+</section>
+<section id="networks-in-haskell" class="slide level2">
+<h2>Networks in Haskell</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Weights</span> <span class="fu">=</span> <span class="dt">W</span> {<span class="ot"> wBiases ::</span> <span class="fu">!</span>(<span class="dt">Vector</span> <span class="dt">Double</span>)  <span class="co">-- n</span>
+                 ,<span class="ot"> wNodes  ::</span> <span class="fu">!</span>(<span class="dt">Matrix</span> <span class="dt">Double</span>)  <span class="co">-- n x m</span>
+                 }                              <span class="co">-- &quot;m to n&quot; layer</span>
+
+
+<span class="kw">data</span> <span class="dt">Network</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="kw">where</span>
+    <span class="dt">O</span><span class="ot">    ::</span> <span class="fu">!</span><span class="dt">Weights</span> <span class="ot">-&gt;</span> <span class="dt">Network</span>
+<span class="ot">    (:~) ::</span> <span class="fu">!</span><span class="dt">Weights</span> <span class="ot">-&gt;</span> <span class="fu">!</span><span class="dt">Network</span> <span class="ot">-&gt;</span> <span class="dt">Network</span>
+<span class="kw">infixr</span> <span class="dv">5</span> <span class="fu">:~</span></code></pre></div>
+<div class="fragment">
+<p>A network with one input layer, two hidden layers, and one output layer would be:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">h1 <span class="fu">:~</span> h2 <span class="fu">:~</span> <span class="dt">O</span> o</code></pre></div>
+</div>
+</section>
+<section id="running-them" class="slide level2">
+<h2>Running them</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">runLayer ::</span> <span class="dt">Weights</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span>
+runLayer (<span class="dt">W</span> wB wN) v <span class="fu">=</span> wB <span class="fu">+</span> wN <span class="fu">#&gt;</span> v
+
+<span class="ot">runNet ::</span> <span class="dt">Network</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span>
+runNet (<span class="dt">O</span> w)     <span class="fu">!</span>v <span class="fu">=</span> logistic (runLayer w v)
+runNet (w <span class="fu">:~</span> n&#39;) <span class="fu">!</span>v <span class="fu">=</span> <span class="kw">let</span> v&#39; <span class="fu">=</span> logistic (runLayer w v)
+                      <span class="kw">in</span>  runNet n&#39; v&#39;</code></pre></div>
+</section>
+<section id="generating-them" class="slide level2">
+<h2>Generating them</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">randomWeights ::</span> <span class="dt">MonadRandom</span> m <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> m <span class="dt">Weights</span>
+randomWeights i o <span class="fu">=</span> <span class="kw">do</span>
+<span class="ot">    seed1 ::</span> <span class="dt">Int</span> <span class="ot">&lt;-</span> getRandom
+<span class="ot">    seed2 ::</span> <span class="dt">Int</span> <span class="ot">&lt;-</span> getRandom
+    <span class="kw">let</span> wB <span class="fu">=</span> randomVector  seed1 <span class="dt">Uniform</span> o <span class="fu">*</span> <span class="dv">2</span> <span class="fu">-</span> <span class="dv">1</span>
+        wN <span class="fu">=</span> uniformSample seed2 o (replicate i (<span class="fu">-</span><span class="dv">1</span>, <span class="dv">1</span>))
+    return <span class="fu">$</span> <span class="dt">W</span> wB wN
+
+<span class="ot">randomNet ::</span> <span class="dt">MonadRandom</span> m <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> m <span class="dt">Network</span>
+randomNet i []     o <span class="fu">=</span>    <span class="dt">O</span> <span class="fu">&lt;$&gt;</span> randomWeights i o
+randomNet i (h<span class="fu">:</span>hs) o <span class="fu">=</span> (<span class="fu">:~</span>) <span class="fu">&lt;$&gt;</span> randomWeights i h <span class="fu">&lt;*&gt;</span> randomNet h hs o</code></pre></div>
+</section>
+<section id="haskell-heart-attacks" class="slide level2">
+<h2>Haskell Heart Attacks</h2>
+<ul>
+<li class="fragment">What if we mixed up the dimensions for <code>randomWeights</code>?</li>
+<li class="fragment">What if layers in the network are incompatible?</li>
+<li class="fragment">How does the user know what size vector a network expects?</li>
+<li class="fragment">Is our <code>runLayer</code> and <code>runNet</code> implementation correct?</li>
+</ul>
+</section>
+<section id="backprop" class="slide level2">
+<h2>Backprop</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">train ::</span> <span class="dt">Double</span>           <span class="co">-- ^ learning rate</span>
+      <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span>    <span class="co">-- ^ input vector</span>
+      <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span>    <span class="co">-- ^ target vector</span>
+      <span class="ot">-&gt;</span> <span class="dt">Network</span>          <span class="co">-- ^ network to train</span>
+      <span class="ot">-&gt;</span> <span class="dt">Network</span>
+train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go x0
+  <span class="kw">where</span></code></pre></div>
+</section>
+<section id="backprop-outer-layer" class="slide level2">
+<h2>Backprop (Outer layer)</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    go ::</span> <span class="dt">Vector</span> <span class="dt">Double</span>    <span class="co">-- ^ input vector</span>
+       <span class="ot">-&gt;</span> <span class="dt">Network</span>          <span class="co">-- ^ network to train</span>
+       <span class="ot">-&gt;</span> (<span class="dt">Network</span>, <span class="dt">Vector</span> <span class="dt">Double</span>)
+    <span class="co">-- handle the output layer</span>
+    go <span class="fu">!</span>x (<span class="dt">O</span> w<span class="fu">@</span>(<span class="dt">W</span> wB wN))
+        <span class="fu">=</span> <span class="kw">let</span> y    <span class="fu">=</span> runLayer w x
+              o    <span class="fu">=</span> logistic y
+              <span class="co">-- the gradient (how much y affects the error)</span>
+              <span class="co">--   (logistic&#39; is the derivative of logistic)</span>
+              dEdy <span class="fu">=</span> logistic&#39; y <span class="fu">*</span> (o <span class="fu">-</span> target)
+              <span class="co">-- new bias weights and node weights</span>
+              wB&#39;  <span class="fu">=</span> wB <span class="fu">-</span> scale rate dEdy
+              wN&#39;  <span class="fu">=</span> wN <span class="fu">-</span> scale rate (dEdy <span class="ot">`outer`</span> x)
+              w&#39;   <span class="fu">=</span> <span class="dt">W</span> wB&#39; wN&#39;
+              <span class="co">-- bundle of derivatives for next step</span>
+              dWs  <span class="fu">=</span> tr wN <span class="fu">#&gt;</span> dEdy
+          <span class="kw">in</span>  (<span class="dt">O</span> w&#39;, dWs)</code></pre></div>
+</section>
+<section id="backprop-inner-layer" class="slide level2">
+<h2>Backprop (Inner layer)</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="co">-- handle the inner layers</span>
+    go <span class="fu">!</span>x (w<span class="fu">@</span>(<span class="dt">W</span> wB wN) <span class="fu">:~</span> n)
+        <span class="fu">=</span> <span class="kw">let</span> y          <span class="fu">=</span> runLayer w x
+              o          <span class="fu">=</span> logistic y
+              <span class="co">-- get dWs&#39;, bundle of derivatives from rest of the net</span>
+              (n&#39;, dWs&#39;) <span class="fu">=</span> go o n
+              <span class="co">-- the gradient (how much y affects the error)</span>
+              dEdy       <span class="fu">=</span> logistic&#39; y <span class="fu">*</span> dWs&#39;
+              <span class="co">-- new bias weights and node weights</span>
+              wB&#39;  <span class="fu">=</span> wB <span class="fu">-</span> scale rate dEdy
+              wN&#39;  <span class="fu">=</span> wN <span class="fu">-</span> scale rate (dEdy <span class="ot">`outer`</span> x)
+              w&#39;   <span class="fu">=</span> <span class="dt">W</span> wB&#39; wN&#39;
+              <span class="co">-- bundle of derivatives for next step</span>
+              dWs  <span class="fu">=</span> tr wN <span class="fu">#&gt;</span> dEdy
+          <span class="kw">in</span>  (w&#39; <span class="fu">:~</span> n&#39;, dWs)</code></pre></div>
+</section>
+<section id="compiler-o-where-art-thou" class="slide level2">
+<h2>Compiler, O Where Art Thou?</h2>
+<ul>
+<li class="fragment">Haskell is all about the compiler helping guide you write your code. But how much did the compiler help there?</li>
+<li class="fragment">How much could have been written incorrectly and still typecheck?</li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+              { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
