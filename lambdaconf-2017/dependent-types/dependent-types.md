@@ -7,7 +7,7 @@
 Slide available at
 <https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html>.
 
-Exercises we will be doing available at 
+All code available at
 <https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types>.
 
 Libraries required: (available on Hackage)
