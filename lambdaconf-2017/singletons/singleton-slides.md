@@ -2,7 +2,6 @@
 % Justin Le https://blog.jle.im (justin@jle.im)
 % Lambdaconf 2017, May 27, 2017
 
-
 ## Preface
 
 Slide available at <https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html>.
