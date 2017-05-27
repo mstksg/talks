@@ -1,17 +1,10 @@
-Talks
-=====
-
-Collection of slides, notes, and posters for public talks I've given, annotated
-when possible.
-
-2016
-----
-
-### LambdaConf 2017
+LambdaConf 2017
+===============
 
 Functional programming conference in Boulder, CO.
 
-#### Singletons And You
+Singletons And You
+------------------
 
 > Let's scratch the surface of the power of Richard Eisenberg's *singletons*
 > library and peek through the doors of opportunity that it opens for us. Learn
@@ -21,7 +14,8 @@ Functional programming conference in Boulder, CO.
 > Look past the hype and see how the singletons library can benefit your
 > programs today through type safety and dependently typed programming!
 
-#### Enhancing Your Haskell With Dependently Typed Programming
+Enhancing Your Haskell With Dependently Typed Programming
+---------------------------------------------------------
 
 *A Case Study With Neural Networks*
 
@@ -44,43 +38,3 @@ Functional programming conference in Boulder, CO.
 > make the compiler work for you today!
 
 Slides and example code provided.
-
-2016
-----
-
-### Asia Oceania Geosciences Society (AOGS) 2016
-
-*(Annotated)*
-
-Geosciences conference in Beijing, China.  Talk discussed the application of
-Recurrent Neural Networks to analyze and predict the interactions between the
-El Nino Souther Oscillation and the California Drought for the winter of
-2015-2016.
-
-### LambdaConf 2016
-
-*(Annotated)*
-
-Functional programming conference in Boulder, CO.  Talk was on applications of
-the Functor Design Pattern and Comonads/Cokleisli Composition to Digital Image
-Processing
-
-### Chapman University Computational Sciences Graduate Conference (CSCG) 2016
-
-Graduate research conference for Chapman University's Computational and Data
-Science program.  Presented on the application of Recurrent Neural Networks to
-analyze and predict the interactions between the El Nino Souther Oscillation
-and the California Drought for the winter of 2015-2016.
-
-2015
-----
-
-### Chapman University Computational Sciences Graduate Conference (CSCG) 2015
-
-*(Annotated)*
-
-Graduate research conference for Chapman University's Computational and Data
-Science program.  Presented on applications of functors and comonads in
-mathematical analysis and algorithm implementation in digital image
-processing.
-
