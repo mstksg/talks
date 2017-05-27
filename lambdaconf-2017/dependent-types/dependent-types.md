@@ -163,8 +163,7 @@ train rate x0 target = fst . go x0
 
 ## Compiler, O Where Art Thou?
 
-> - Haskell is all about the compiler helping guide you write your code.  But how
->   much did the compiler help there?
+> - Haskell is all about the compiler helping guide you write your code.  But how  much did the compiler help there?
 > - How can the "shape" of the matrices guide our programming?
 
 ## Haskell Red Flags
