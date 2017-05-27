@@ -10,13 +10,8 @@ Slide available at
 All code available at
 <https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types>.
 
-Libraries required: (available on Hackage)
-
--   *hmatrix*
--   *singletons*
--   *MonadRandom*
-
-GHC 8.x assumed.
+Libraries required: (available on Hackage) *hmatrix*, *singletons*,
+*MonadRandom*. GHC 8.x assumed.
 
 ## The Big Question
 
@@ -40,14 +35,13 @@ an output $\mathbf{y} : \mathbb{R}^m$.
 
 They are parameterized by a weight matrix $W : \mathbb{R}^{m \times n}$ (an $m
 \times n$ matrix) and a bias vector $\mathbf{b} : \mathbb{R}^m$, and the result
-is:
+is: (for some activation function `f`)
 
 $$
 \mathbf{y} = f( W \mathbf{x} + \mathbf{b})
 $$
 
-Where $f$ is some (differentiable) activation function.  A neural network would
-take a vector through many layers.
+A neural network would take a vector through many layers.
 
 ## Networks in Haskell
 
@@ -166,6 +160,7 @@ train rate x0 target = fst . go x0
 
 > - Haskell is all about the compiler helping guide you write your code.  But how  much did the compiler help there?
 > - How can the "shape" of the matrices guide our programming?
+> - We basically rely on naming conventions to make sure we write our code correctly.
 
 ## Haskell Red Flags
 
@@ -202,9 +197,8 @@ Operations are typed:
 (<#) :: (KnownNat m, KnownNat n) => L m n -> R n -> R m
 ```
 
-(`KnownNat n` lets hmatrix use the `n` in the type)
-
-Typed holes can guide our development, too!
+`KnownNat n` lets hmatrix use the `n` in the type.  Typed holes can guide our
+development, too!
 
 ## Data Kinds
 
@@ -349,10 +343,19 @@ randomNet' = \case
 
 ## Implicit passing
 
+Explicitly passing singletons can be ugly.
+
+. . .
+
 ```haskell
 class SingI x where
     sing :: Sing x
 ```
+
+We can now recover the expressivity of the original function, and gain
+demand-driven shapes.
+
+. . .
 
 ```haskell
 randomNet :: forall m i hs o. (MonadRandom m, KnownNat i, SingI hs, KnownNat o)
@@ -371,6 +374,10 @@ train :: forall i hs o. (KnownNat i, KnownNat o)
       -> Network i hs o
 train rate x0 target = fst . go x0
 ```
+
+. . .
+
+Ready for this?
 
 ## Backprop
 
@@ -440,5 +447,10 @@ added types, and everything is great!
 
 ## Further reading
 
-Blog series:
-<https://blog.jle.im/entries/series/+practical-dependent-types-in-haskell.html>
+- Blog series: <https://blog.jle.im/entries/series/+practical-dependent-types-in-haskell.html>
+- Extra resources:
+  - <https://www.youtube.com/watch?v=rhWMhTjQzsU>
+  - <http://www.well-typed.com/blog/2015/11/implementing-a-minimal-version-of-haskell-servant/>
+  - <https://www.schoolofhaskell.com/user/konn/prove-your-haskell-for-great-safety>
+  - <http://jozefg.bitbucket.org/posts/2014-08-25-dep-types-part-1.html>
+

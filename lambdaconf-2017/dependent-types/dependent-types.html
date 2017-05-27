@@ -74,13 +74,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Preface</h2>
 <p>Slide available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html</a>.</p>
 <p>All code available at <a href="https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types" class="uri">https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types</a>.</p>
-<p>Libraries required: (available on Hackage)</p>
-<ul>
-<li><em>hmatrix</em></li>
-<li><em>singletons</em></li>
-<li><em>MonadRandom</em></li>
-</ul>
-<p>GHC 8.x assumed.</p>
+<p>Libraries required: (available on Hackage) <em>hmatrix</em>, <em>singletons</em>, <em>MonadRandom</em>. GHC 8.x assumed.</p>
 </section>
 <section id="the-big-question" class="slide level2">
 <h2>The Big Question</h2>
@@ -99,9 +93,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Parameterized functions</h2>
 <p>Each layer receives an input vector, <span class="math inline"><strong>x</strong> : ℝ<sup><em>n</em></sup></span>, and produces an output <span class="math inline"><strong>y</strong> : ℝ<sup><em>m</em></sup></span>.</p>
 <div class="fragment">
-<p>They are parameterized by a weight matrix <span class="math inline"><em>W</em> : ℝ<sup><em>m</em> × <em>n</em></sup></span> (an <span class="math inline"><em>m</em> × <em>n</em></span> matrix) and a bias vector <span class="math inline"><strong>b</strong> : ℝ<sup><em>m</em></sup></span>, and the result is:</p>
+<p>They are parameterized by a weight matrix <span class="math inline"><em>W</em> : ℝ<sup><em>m</em> × <em>n</em></sup></span> (an <span class="math inline"><em>m</em> × <em>n</em></span> matrix) and a bias vector <span class="math inline"><strong>b</strong> : ℝ<sup><em>m</em></sup></span>, and the result is: (for some activation function <code>f</code>)</p>
 <p><br /><span class="math display"><strong>y</strong> = <em>f</em>(<em>W</em><strong>x</strong> + <strong>b</strong>)</span><br /></p>
-<p>Where <span class="math inline"><em>f</em></span> is some (differentiable) activation function. A neural network would take a vector through many layers.</p>
+<p>A neural network would take a vector through many layers.</p>
 </div>
 </section>
 <section id="networks-in-haskell" class="slide level2">
@@ -207,6 +201,7 @@ train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go 
 <ul>
 <li class="fragment">Haskell is all about the compiler helping guide you write your code. But how much did the compiler help there?</li>
 <li class="fragment">How can the &quot;shape&quot; of the matrices guide our programming?</li>
+<li class="fragment">We basically rely on naming conventions to make sure we write our code correctly.</li>
 </ul>
 </section>
 <section id="haskell-red-flags" class="slide level2">
@@ -233,8 +228,7 @@ train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go 
 <p>Operations are typed:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(+)  ::</span> <span class="dt">KnownNat</span> n               <span class="ot">=&gt;</span> <span class="dt">R</span> n   <span class="ot">-&gt;</span> <span class="dt">R</span> n <span class="ot">-&gt;</span> <span class="dt">R</span> n
 <span class="ot">(&lt;#) ::</span> (<span class="dt">KnownNat</span> m, <span class="dt">KnownNat</span> n) <span class="ot">=&gt;</span> <span class="dt">L</span> m n <span class="ot">-&gt;</span> <span class="dt">R</span> n <span class="ot">-&gt;</span> <span class="dt">R</span> m</code></pre></div>
-<p>(<code>KnownNat n</code> lets hmatrix use the <code>n</code> in the type)</p>
-<p>Typed holes can guide our development, too!</p>
+<p><code>KnownNat n</code> lets hmatrix use the <code>n</code> in the type. Typed holes can guide our development, too!</p>
 </div>
 </section>
 <section id="data-kinds" class="slide level2">
@@ -351,11 +345,17 @@ randomNet&#39; <span class="fu">=</span> \<span class="kw">case</span>
 </section>
 <section id="implicit-passing" class="slide level2">
 <h2>Implicit passing</h2>
+<p>Explicitly passing singletons can be ugly.</p>
+<div class="fragment">
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">SingI</span> x <span class="kw">where</span>
 <span class="ot">    sing ::</span> <span class="dt">Sing</span> x</code></pre></div>
+<p>We can now recover the expressivity of the original function, and gain demand-driven shapes.</p>
+</div>
+<div class="fragment">
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">randomNet ::</span> forall m i hs o<span class="fu">.</span> (<span class="dt">MonadRandom</span> m, <span class="dt">KnownNat</span> i, <span class="dt">SingI</span> hs, <span class="dt">KnownNat</span> o)
           <span class="ot">=&gt;</span> m (<span class="dt">Network</span> i hs o)
 randomNet <span class="fu">=</span> randomNet&#39; sing</code></pre></div>
+</div>
 </section>
 <section id="backprop-1" class="slide level2">
 <h2>Backprop</h2>
@@ -366,6 +366,9 @@ randomNet <span class="fu">=</span> randomNet&#39; sing</code></pre></div>
       <span class="ot">-&gt;</span> <span class="dt">Network</span> i hs o   <span class="co">-- ^ network to train</span>
       <span class="ot">-&gt;</span> <span class="dt">Network</span> i hs o
 train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go x0</code></pre></div>
+<div class="fragment">
+<p>Ready for this?</p>
+</div>
 </section>
 <section id="backprop-2" class="slide level2">
 <h2>Backprop</h2>
@@ -428,7 +431,14 @@ train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go 
 </section>
 <section id="further-reading" class="slide level2">
 <h2>Further reading</h2>
-<p>Blog series: <a href="https://blog.jle.im/entries/series/+practical-dependent-types-in-haskell.html" class="uri">https://blog.jle.im/entries/series/+practical-dependent-types-in-haskell.html</a></p>
+<ul>
+<li>Blog series: <a href="https://blog.jle.im/entries/series/+practical-dependent-types-in-haskell.html" class="uri">https://blog.jle.im/entries/series/+practical-dependent-types-in-haskell.html</a></li>
+<li>Extra resources:</li>
+<li><a href="https://www.youtube.com/watch?v=rhWMhTjQzsU" class="uri">https://www.youtube.com/watch?v=rhWMhTjQzsU</a></li>
+<li><a href="http://www.well-typed.com/blog/2015/11/implementing-a-minimal-version-of-haskell-servant/" class="uri">http://www.well-typed.com/blog/2015/11/implementing-a-minimal-version-of-haskell-servant/</a></li>
+<li><a href="https://www.schoolofhaskell.com/user/konn/prove-your-haskell-for-great-safety" class="uri">https://www.schoolofhaskell.com/user/konn/prove-your-haskell-for-great-safety</a></li>
+<li><a href="http://jozefg.bitbucket.org/posts/2014-08-25-dep-types-part-1.html" class="uri">http://jozefg.bitbucket.org/posts/2014-08-25-dep-types-part-1.html</a></li>
+</ul>
 </section>
     </div>
   </div>
