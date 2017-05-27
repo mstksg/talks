@@ -1,0 +1,3 @@
+[submodule "lambdaconf-2017/singletons/reveal.js"]
+	path = lambdaconf-2017/singletons/reveal.js
+	url = https://github.com/hakimel/reveal.js/
