@@ -104,7 +104,7 @@ Oops.
 
 ## The Fundamental Issue in Haskell
 
-> - In Haskell, types only exist at runtime.  They are **erased** at runtime.
+> - In Haskell, types only exist at *compile-time*.  They are **erased** at runtime.
 > - This is a good thing for performance!  Types incur no runtime overhead!
 > - But it makes functions like `doorStatus` fundamentally unwritable without fancy typeclasses.
 > - ...or does it?
