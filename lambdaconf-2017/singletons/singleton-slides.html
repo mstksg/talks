@@ -70,6 +70,27 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   <p class="date">Lambdaconf 2017, May 27, 2017</p>
 </section>
 
+<section id="preface" class="slide level2">
+<h2>Preface</h2>
+<p>Slide available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html</a>.</p>
+<div class="fragment">
+<p>GHC extensions (potentially) used:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE GADTs                #-}</span>
+<span class="ot">{-# LANGUAGE KindSignatures       #-}</span>
+<span class="ot">{-# LANGUAGE LambdaCase           #-}</span>
+<span class="ot">{-# LANGUAGE RankNTypes           #-}</span>
+<span class="ot">{-# LANGUAGE RankNTypes           #-}</span>
+<span class="ot">{-# LANGUAGE ScopedTypeVariables  #-}</span>
+<span class="ot">{-# LANGUAGE TemplateHaskell      #-}</span>
+<span class="ot">{-# LANGUAGE TypeFamilies         #-}</span>
+<span class="ot">{-# LANGUAGE TypeInType           #-}</span>
+<span class="ot">{-# LANGUAGE TypeOperators        #-}</span>
+<span class="ot">{-# LANGUAGE UndecidableInstances #-}</span>
+
+<span class="kw">import </span><span class="dt">Data.Kind</span>        <span class="co">-- to get type Type = *</span>
+<span class="kw">import </span><span class="dt">Data.Singletons</span></code></pre></div>
+</div>
+</section>
 <section id="safety-with-phantom-types" class="slide level2">
 <h2>Safety with Phantom Types</h2>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">DoorState</span> <span class="fu">=</span> <span class="dt">Opened</span> <span class="fu">|</span> <span class="dt">Closed</span> <span class="fu">|</span> <span class="dt">Locked</span>

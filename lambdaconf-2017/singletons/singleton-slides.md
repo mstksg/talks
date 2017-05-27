@@ -3,6 +3,32 @@
 % Lambdaconf 2017, May 27, 2017
 
 
+## Preface
+
+Slide available at <https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html>.
+
+. . .
+
+GHC extensions (potentially) used:
+
+```haskell
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE KindSignatures       #-}
+{-# LANGUAGE LambdaCase           #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE TemplateHaskell      #-}
+{-# LANGUAGE TypeFamilies         #-}
+{-# LANGUAGE TypeInType           #-}
+{-# LANGUAGE TypeOperators        #-}
+{-# LANGUAGE UndecidableInstances #-}
+
+import Data.Kind        -- to get type Type = *
+import Data.Singletons
+```
+
+
 ## Safety with Phantom Types
 
 ```haskell
