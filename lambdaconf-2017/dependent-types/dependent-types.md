@@ -11,6 +11,7 @@ Exercises we will be doing available at
 <https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types>.
 
 Libraries required: (available on Hackage)
+
 -   *hmatrix*
 -   *singletons*
 -   *MonadRandom*
@@ -45,9 +46,8 @@ $$
 \mathbf{y} = f( W \mathbf{x} + \mathbf{b})
 $$
 
-Where $f$ is some (differentiable) activation function.
-
-A neural network would take a vector through many layers.
+Where $f$ is some (differentiable) activation function.  A neural network would
+take a vector through many layers.
 
 ## Networks in Haskell
 
@@ -103,6 +103,7 @@ randomNet i (h:hs) o = (:~) <$> randomWeights i h <*> randomNet h hs o
 ## Haskell Heart Attacks
 
 > - What if we mixed up the dimensions for `randomWeights`?
+> - What if the *user* mixed up the dimensions for `randomWeights`?
 > - What if layers in the network are incompatible?
 > - How does the user know what size vector a network expects?
 > - Is our `runLayer` and `runNet` implementation correct?
@@ -203,6 +204,8 @@ Operations are typed:
 
 (`KnownNat n` lets hmatrix use the `n` in the type)
 
+Typed holes can guide our development, too!
+
 ## Data Kinds
 
 With `-XDataKinds`, all values and types are lifted to types and kinds.
@@ -231,7 +234,7 @@ ghci> :k '[ 'True, 'False ]
 ## A Typed Alternative
 
 ```haskell
-data Network :: Nat -> [Nat] -> Nat -> * where
+data Network :: Nat -> [Nat] -> Nat -> Type where
     O     :: !(Weights i o)
           -> Network i '[] o
     (:~) :: KnownNat h
@@ -256,14 +259,22 @@ h2 :~ h1 :~ o -- type error
 ## Running
 
 ```haskell
-runLayer :: Weights -> Vector Double -> Vector Double
+runLayer :: (KnownNat i, KnownNat o)
+         => Weights i o
+         -> R i
+         -> R o
 runLayer (W wB wN) v = wB + wN #> v
 
-runNet :: Network -> Vector Double -> Vector Double
+runNet :: (KnownNat i, KnownNat o)
+       => Network i hs o
+       -> R i
+       -> R o
 runNet (O w)     !v = logistic (runLayer w v)
 runNet (w :~ n') !v = let v' = logistic (runLayer w v)
                       in  runNet n' v'
 ```
+
+Exactly the same!  No loss in expressivity!
 
 ## Running
 
@@ -282,7 +293,8 @@ randomWeights = do
     return $ W wB wN
 ```
 
-No need for explicit arguments!
+No need for explicit arguments!  User can demand `i` and `o`.  No reliance on
+documentation and parameter orders.
 
 ## Generating
 
@@ -299,6 +311,8 @@ randomNet = case hs of [] -> ??
 The solution for pattern matching on types: singletons.
 
 ```haskell
+-- (not the actual impelentation)
+
 data Sing :: Bool -> Type where
     SFalse :: Sing 'False
     STrue  :: Sing 'True
@@ -318,7 +332,7 @@ ghci> :t SFalse
 Sing 'False
 ghci> :t STrue `SCons` (SFalse `SCons` SNil)
 Sing '[True, False]
-ghci> :t SNat @1 `SCons` (SNat @1 `SCons` SNil)
+ghci> :t SNat @1 `SCons` (SNat @2 `SCons` SNil)
 Sing '[1, 2]
 ```
 
@@ -335,7 +349,6 @@ randomNet' = \case
 
 ## Implicit passing
 
-
 ```haskell
 class SingI x where
     sing :: Sing x
@@ -347,10 +360,83 @@ randomNet :: forall m i hs o. (MonadRandom m, KnownNat i, SingI hs, KnownNat o)
 randomNet = randomNet' sing
 ```
 
+## Backprop
+
+```haskell
+train :: forall i hs o. (KnownNat i, KnownNat o)
+      => Double           -- ^ learning rate
+      -> R i              -- ^ input vector
+      -> R o              -- ^ target vector
+      -> Network i hs o   -- ^ network to train
+      -> Network i hs o
+train rate x0 target = fst . go x0
+```
+
+## Backprop
+
+```haskell
+    go  :: forall j js. KnownNat j
+        => R j              -- ^ input vector
+        -> Network j js o   -- ^ network to train
+        -> (Network j js o, R j)
+    -- handle the output layer
+    go !x (O w@(W wB wN))
+        = let y    = runLayer w x
+              o    = logistic y
+              -- the gradient (how much y affects the error)
+              --   (logistic' is the derivative of logistic)
+              dEdy = logistic' y * (o - target)
+              -- new bias weights and node weights
+              wB'  = wB - konst rate * dEdy
+              wN'  = wN - konst rate * (dEdy `outer` x)
+              w'   = W wB' wN'
+              -- bundle of derivatives for next step
+              dWs  = tr wN #> dEdy
+          in  (O w', dWs)
+    -- handle the inner layers
+    go !x (w@(W wB wN) :~ n)
+        = let y          = runLayer w x
+              o          = logistic y
+              -- get dWs', bundle of derivatives from rest of the net
+              (n', dWs') = go o n
+              -- the gradient (how much y affects the error)
+              dEdy       = logistic' y * dWs'
+              -- new bias weights and node weights
+              wB'  = wB - konst rate * dEdy
+              wN'  = wN - konst rate * (dEdy `outer` x)
+              w'   = W wB' wN'
+              -- bundle of derivatives for next step
+              dWs  = tr wN #> dEdy
+          in  (w' :~ n', dWs)
+```
+
+## Backprop
+
+```haskell
+    -- handle the inner layers
+    go !x (w@(W wB wN) :~ n)
+        = let y          = runLayer w x
+              o          = logistic y
+              -- get dWs', bundle of derivatives from rest of the net
+              (n', dWs') = go o n
+              -- the gradient (how much y affects the error)
+              dEdy       = logistic' y * dWs'
+              -- new bias weights and node weights
+              wB'  = wB - konst rate * dEdy
+              wN'  = wN - konst rate * (dEdy `outer` x)
+              w'   = W wB' wN'
+              -- bundle of derivatives for next step
+              dWs  = tr wN #> dEdy
+          in  (w' :~ n', dWs)
+```
+
+Surprise!  It's actually identical!  No loss in expressivity.  Typed holes can
+write our code for us in many cases.  And shapes are all verified.
+
 ## Type-Driven Development
 
 We wrote an untyped implementation, then realized what was wrong.  Then we
-added types!
+added types, and everything is great!
 
 ## Further reading
 

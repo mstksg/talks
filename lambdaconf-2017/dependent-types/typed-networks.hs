@@ -8,6 +8,7 @@
 
 import Control.Monad
 import Control.Monad.Random
+import Data.Kind
 import Data.List
 import Data.Maybe
 import Data.Singletons
@@ -21,7 +22,7 @@ data Weights i o = W { wBiases :: !(R o)
                      , wNodes  :: !(L o i)
                      }                      -- an "o x i" layer
 
-data Network :: Nat -> [Nat] -> Nat -> * where
+data Network :: Nat -> [Nat] -> Nat -> Type where
     O     :: !(Weights i o)
           -> Network i '[] o
     (:~) :: KnownNat h

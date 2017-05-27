@@ -74,7 +74,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Preface</h2>
 <p>Slide available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html</a>.</p>
 <p>Exercises we will be doing available at <a href="https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types" class="uri">https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types</a>.</p>
-<p>Libraries required: (available on Hackage) - <em>hmatrix</em> - <em>singletons</em> - <em>MonadRandom</em></p>
+<p>Libraries required: (available on Hackage)</p>
+<ul>
+<li><em>hmatrix</em></li>
+<li><em>singletons</em></li>
+<li><em>MonadRandom</em></li>
+</ul>
 <p>GHC 8.x assumed.</p>
 </section>
 <section id="the-big-question" class="slide level2">
@@ -96,8 +101,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="fragment">
 <p>They are parameterized by a weight matrix <span class="math inline"><em>W</em> : ℝ<sup><em>m</em> × <em>n</em></sup></span> (an <span class="math inline"><em>m</em> × <em>n</em></span> matrix) and a bias vector <span class="math inline"><strong>b</strong> : ℝ<sup><em>m</em></sup></span>, and the result is:</p>
 <p><br /><span class="math display"><strong>y</strong> = <em>f</em>(<em>W</em><strong>x</strong> + <strong>b</strong>)</span><br /></p>
-<p>Where <span class="math inline"><em>f</em></span> is some (differentiable) activation function.</p>
-<p>A neural network would take a vector through many layers.</p>
+<p>Where <span class="math inline"><em>f</em></span> is some (differentiable) activation function. A neural network would take a vector through many layers.</p>
 </div>
 </section>
 <section id="networks-in-haskell" class="slide level2">
@@ -144,6 +148,7 @@ randomNet i (h<span class="fu">:</span>hs) o <span class="fu">=</span> (<span cl
 <h2>Haskell Heart Attacks</h2>
 <ul>
 <li class="fragment">What if we mixed up the dimensions for <code>randomWeights</code>?</li>
+<li class="fragment">What if the <em>user</em> mixed up the dimensions for <code>randomWeights</code>?</li>
 <li class="fragment">What if layers in the network are incompatible?</li>
 <li class="fragment">How does the user know what size vector a network expects?</li>
 <li class="fragment">Is our <code>runLayer</code> and <code>runNet</code> implementation correct?</li>
@@ -229,6 +234,7 @@ train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go 
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">(+)  ::</span> <span class="dt">KnownNat</span> n               <span class="ot">=&gt;</span> <span class="dt">R</span> n   <span class="ot">-&gt;</span> <span class="dt">R</span> n <span class="ot">-&gt;</span> <span class="dt">R</span> n
 <span class="ot">(&lt;#) ::</span> (<span class="dt">KnownNat</span> m, <span class="dt">KnownNat</span> n) <span class="ot">=&gt;</span> <span class="dt">L</span> m n <span class="ot">-&gt;</span> <span class="dt">R</span> n <span class="ot">-&gt;</span> <span class="dt">R</span> m</code></pre></div>
 <p>(<code>KnownNat n</code> lets hmatrix use the <code>n</code> in the type)</p>
+<p>Typed holes can guide our development, too!</p>
 </div>
 </section>
 <section id="data-kinds" class="slide level2">
@@ -252,7 +258,7 @@ ghci<span class="fu">&gt;</span> <span class="fu">:</span>k <span class="ch">&#3
 </section>
 <section id="a-typed-alternative-2" class="slide level2">
 <h2>A Typed Alternative</h2>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Network</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> [<span class="dt">Nat</span>] <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="fu">*</span> <span class="kw">where</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Network</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> [<span class="dt">Nat</span>] <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
     <span class="dt">O</span><span class="ot">     ::</span> <span class="fu">!</span>(<span class="dt">Weights</span> i o)
           <span class="ot">-&gt;</span> <span class="dt">Network</span> i <span class="ch">&#39;[] o</span>
 <span class="ot">    (:~) ::</span> <span class="dt">KnownNat</span> h
@@ -272,13 +278,20 @@ h2 <span class="fu">:~</span> h1 <span class="fu">:~</span> o <span class="co">-
 </section>
 <section id="running" class="slide level2">
 <h2>Running</h2>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">runLayer ::</span> <span class="dt">Weights</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">runLayer ::</span> (<span class="dt">KnownNat</span> i, <span class="dt">KnownNat</span> o)
+         <span class="ot">=&gt;</span> <span class="dt">Weights</span> i o
+         <span class="ot">-&gt;</span> <span class="dt">R</span> i
+         <span class="ot">-&gt;</span> <span class="dt">R</span> o
 runLayer (<span class="dt">W</span> wB wN) v <span class="fu">=</span> wB <span class="fu">+</span> wN <span class="fu">#&gt;</span> v
 
-<span class="ot">runNet ::</span> <span class="dt">Network</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span> <span class="ot">-&gt;</span> <span class="dt">Vector</span> <span class="dt">Double</span>
+<span class="ot">runNet ::</span> (<span class="dt">KnownNat</span> i, <span class="dt">KnownNat</span> o)
+       <span class="ot">=&gt;</span> <span class="dt">Network</span> i hs o
+       <span class="ot">-&gt;</span> <span class="dt">R</span> i
+       <span class="ot">-&gt;</span> <span class="dt">R</span> o
 runNet (<span class="dt">O</span> w)     <span class="fu">!</span>v <span class="fu">=</span> logistic (runLayer w v)
 runNet (w <span class="fu">:~</span> n&#39;) <span class="fu">!</span>v <span class="fu">=</span> <span class="kw">let</span> v&#39; <span class="fu">=</span> logistic (runLayer w v)
                       <span class="kw">in</span>  runNet n&#39; v&#39;</code></pre></div>
+<p>Exactly the same! No loss in expressivity!</p>
 </section>
 <section id="running-1" class="slide level2">
 <h2>Running</h2>
@@ -294,7 +307,7 @@ randomWeights <span class="fu">=</span> <span class="kw">do</span>
     <span class="kw">let</span> wB <span class="fu">=</span> randomVector  s1 <span class="dt">Uniform</span> <span class="fu">*</span> <span class="dv">2</span> <span class="fu">-</span> <span class="dv">1</span>
         wN <span class="fu">=</span> uniformSample s2 (<span class="fu">-</span><span class="dv">1</span>) <span class="dv">1</span>
     return <span class="fu">$</span> <span class="dt">W</span> wB wN</code></pre></div>
-<p>No need for explicit arguments!</p>
+<p>No need for explicit arguments! User can demand <code>i</code> and <code>o</code>. No reliance on documentation and parameter orders.</p>
 </section>
 <section id="generating-1" class="slide level2">
 <h2>Generating</h2>
@@ -306,7 +319,9 @@ randomNet = case hs of [] -&gt; ??</code></pre>
 <section id="pattern-matching-on-types" class="slide level2">
 <h2>Pattern matching on types</h2>
 <p>The solution for pattern matching on types: singletons.</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Sing</span><span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- (not the actual impelentation)</span>
+
+<span class="kw">data</span> <span class="dt">Sing</span><span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
     <span class="dt">SFalse</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;False</span>
     <span class="dt">STrue</span><span class="ot">  ::</span> <span class="dt">Sing</span> <span class="ch">&#39;True</span>
 
@@ -323,7 +338,7 @@ randomNet = case hs of [] -&gt; ??</code></pre>
 <span class="dt">Sing</span> <span class="ch">&#39;False</span>
 ghci<span class="fu">&gt;</span> <span class="fu">:</span>t <span class="dt">STrue</span> <span class="ot">`SCons`</span> (<span class="dt">SFalse</span> <span class="ot">`SCons`</span> <span class="dt">SNil</span>)
 <span class="dt">Sing</span> <span class="ch">&#39;[True, False]</span>
-ghci<span class="fu">&gt;</span> <span class="fu">:</span>t <span class="dt">SNat</span> <span class="fu">@</span><span class="dv">1</span> <span class="ot">`SCons`</span> (<span class="dt">SNat</span> <span class="fu">@</span><span class="dv">1</span> <span class="ot">`SCons`</span> <span class="dt">SNil</span>)
+ghci<span class="fu">&gt;</span> <span class="fu">:</span>t <span class="dt">SNat</span> <span class="fu">@</span><span class="dv">1</span> <span class="ot">`SCons`</span> (<span class="dt">SNat</span> <span class="fu">@</span><span class="dv">2</span> <span class="ot">`SCons`</span> <span class="dt">SNil</span>)
 <span class="dt">Sing</span> <span class="ch">&#39;[1, 2]</span></code></pre></div>
 </section>
 <section id="random-networks" class="slide level2">
@@ -342,9 +357,74 @@ randomNet&#39; <span class="fu">=</span> \<span class="kw">case</span>
           <span class="ot">=&gt;</span> m (<span class="dt">Network</span> i hs o)
 randomNet <span class="fu">=</span> randomNet&#39; sing</code></pre></div>
 </section>
+<section id="backprop-1" class="slide level2">
+<h2>Backprop</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">train ::</span> forall i hs o<span class="fu">.</span> (<span class="dt">KnownNat</span> i, <span class="dt">KnownNat</span> o)
+      <span class="ot">=&gt;</span> <span class="dt">Double</span>           <span class="co">-- ^ learning rate</span>
+      <span class="ot">-&gt;</span> <span class="dt">R</span> i              <span class="co">-- ^ input vector</span>
+      <span class="ot">-&gt;</span> <span class="dt">R</span> o              <span class="co">-- ^ target vector</span>
+      <span class="ot">-&gt;</span> <span class="dt">Network</span> i hs o   <span class="co">-- ^ network to train</span>
+      <span class="ot">-&gt;</span> <span class="dt">Network</span> i hs o
+train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go x0</code></pre></div>
+</section>
+<section id="backprop-2" class="slide level2">
+<h2>Backprop</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">    go  ::</span> forall j js<span class="fu">.</span> <span class="dt">KnownNat</span> j
+        <span class="ot">=&gt;</span> <span class="dt">R</span> j              <span class="co">-- ^ input vector</span>
+        <span class="ot">-&gt;</span> <span class="dt">Network</span> j js o   <span class="co">-- ^ network to train</span>
+        <span class="ot">-&gt;</span> (<span class="dt">Network</span> j js o, <span class="dt">R</span> j)
+    <span class="co">-- handle the output layer</span>
+    go <span class="fu">!</span>x (<span class="dt">O</span> w<span class="fu">@</span>(<span class="dt">W</span> wB wN))
+        <span class="fu">=</span> <span class="kw">let</span> y    <span class="fu">=</span> runLayer w x
+              o    <span class="fu">=</span> logistic y
+              <span class="co">-- the gradient (how much y affects the error)</span>
+              <span class="co">--   (logistic&#39; is the derivative of logistic)</span>
+              dEdy <span class="fu">=</span> logistic&#39; y <span class="fu">*</span> (o <span class="fu">-</span> target)
+              <span class="co">-- new bias weights and node weights</span>
+              wB&#39;  <span class="fu">=</span> wB <span class="fu">-</span> konst rate <span class="fu">*</span> dEdy
+              wN&#39;  <span class="fu">=</span> wN <span class="fu">-</span> konst rate <span class="fu">*</span> (dEdy <span class="ot">`outer`</span> x)
+              w&#39;   <span class="fu">=</span> <span class="dt">W</span> wB&#39; wN&#39;
+              <span class="co">-- bundle of derivatives for next step</span>
+              dWs  <span class="fu">=</span> tr wN <span class="fu">#&gt;</span> dEdy
+          <span class="kw">in</span>  (<span class="dt">O</span> w&#39;, dWs)
+    <span class="co">-- handle the inner layers</span>
+    go <span class="fu">!</span>x (w<span class="fu">@</span>(<span class="dt">W</span> wB wN) <span class="fu">:~</span> n)
+        <span class="fu">=</span> <span class="kw">let</span> y          <span class="fu">=</span> runLayer w x
+              o          <span class="fu">=</span> logistic y
+              <span class="co">-- get dWs&#39;, bundle of derivatives from rest of the net</span>
+              (n&#39;, dWs&#39;) <span class="fu">=</span> go o n
+              <span class="co">-- the gradient (how much y affects the error)</span>
+              dEdy       <span class="fu">=</span> logistic&#39; y <span class="fu">*</span> dWs&#39;
+              <span class="co">-- new bias weights and node weights</span>
+              wB&#39;  <span class="fu">=</span> wB <span class="fu">-</span> konst rate <span class="fu">*</span> dEdy
+              wN&#39;  <span class="fu">=</span> wN <span class="fu">-</span> konst rate <span class="fu">*</span> (dEdy <span class="ot">`outer`</span> x)
+              w&#39;   <span class="fu">=</span> <span class="dt">W</span> wB&#39; wN&#39;
+              <span class="co">-- bundle of derivatives for next step</span>
+              dWs  <span class="fu">=</span> tr wN <span class="fu">#&gt;</span> dEdy
+          <span class="kw">in</span>  (w&#39; <span class="fu">:~</span> n&#39;, dWs)</code></pre></div>
+</section>
+<section id="backprop-3" class="slide level2">
+<h2>Backprop</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">    <span class="co">-- handle the inner layers</span>
+    go <span class="fu">!</span>x (w<span class="fu">@</span>(<span class="dt">W</span> wB wN) <span class="fu">:~</span> n)
+        <span class="fu">=</span> <span class="kw">let</span> y          <span class="fu">=</span> runLayer w x
+              o          <span class="fu">=</span> logistic y
+              <span class="co">-- get dWs&#39;, bundle of derivatives from rest of the net</span>
+              (n&#39;, dWs&#39;) <span class="fu">=</span> go o n
+              <span class="co">-- the gradient (how much y affects the error)</span>
+              dEdy       <span class="fu">=</span> logistic&#39; y <span class="fu">*</span> dWs&#39;
+              <span class="co">-- new bias weights and node weights</span>
+              wB&#39;  <span class="fu">=</span> wB <span class="fu">-</span> konst rate <span class="fu">*</span> dEdy
+              wN&#39;  <span class="fu">=</span> wN <span class="fu">-</span> konst rate <span class="fu">*</span> (dEdy <span class="ot">`outer`</span> x)
+              w&#39;   <span class="fu">=</span> <span class="dt">W</span> wB&#39; wN&#39;
+              <span class="co">-- bundle of derivatives for next step</span>
+              dWs  <span class="fu">=</span> tr wN <span class="fu">#&gt;</span> dEdy
+          <span class="kw">in</span>  (w&#39; <span class="fu">:~</span> n&#39;, dWs)</code></pre></div>
+<p>Surprise! It's actually identical! No loss in expressivity. Typed holes can write our code for us in many cases. And shapes are all verified.</p>
+</section>
 <section id="type-driven-development" class="slide level2">
 <h2>Type-Driven Development</h2>
-<p>We wrote an untyped implementation, then realized what was wrong. Then we added types!</p>
+<p>We wrote an untyped implementation, then realized what was wrong. Then we added types, and everything is great!</p>
 </section>
 <section id="further-reading" class="slide level2">
 <h2>Further reading</h2>
