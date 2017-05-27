@@ -194,7 +194,7 @@ Door is locked!
 ## Initialize Door
 
 ```haskell
-initializeDoor' :: Sing s -> Door s
+initializeDoor' :: SingDS s -> Door s
 initializeDoor' _ _ = UnsafeMkDoor
 ```
 
@@ -204,7 +204,7 @@ initializeDoor' _ _ = UnsafeMkDoor
 ghci> :t initializeDoor' SOpened
 initializeDoor SOpened :: Door 'Opened
 ghci> :t initializeDoor' SClosed
-initializeDoor SOpened :: Door 'Closed
+initializeDoor SClosed :: Door 'Closed
 ```
 
 ## Initialize Door
@@ -293,16 +293,18 @@ $(singletons [d|
 This creates three types and three constructors:
 
 ```haskell
+-- not the actual code, but essentially what happens
 data Sing :: DoorState -> Type where
     SOpened :: Sing 'Opened
     SClosed :: Sing 'Closed
     SLocked :: Sing 'Locked
 ```
 
+`Sing` is a poly-kinded type constructor (family):
 
 ## The singletons way
 
-And also 
+And also
 
 ```haskell
 instance SingI 'Opened where
@@ -313,11 +315,9 @@ instance SingI 'Locked where
     sing = SLocked
 ```
 
-And some more stuff too.
+(`SingI` is a poly-kinded typeclass)
 
-## The singletons way
-
-`Sing` is a poly-kinded type constructor (family):
+## Examples
 
 ```haskell
 STrue :: Sing 'True
@@ -325,9 +325,12 @@ SJust SFalse :: Sing ('Just 'True)
 SOpened `SCons` SClosed `SCons` SNil :: Sing '[ 'Opened, 'Closed ]
 ```
 
-`SingI` is a poly-kinded typeclass.
+```haskell
+ghci> sing :: Sing 'True'
+STrue
+```
 
-## Some more stuff
+## Other stuff created from the library
 
 Some other convenient features:
 
@@ -346,7 +349,7 @@ ghci> case s of
         SomeSing SLocked -> "SLocked."
 ```
 
-## Non-trivial type dependencies
+## Non-trivial type logic
 
 ```haskell
 knock :: Door s -> IO ()

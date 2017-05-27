@@ -241,13 +241,13 @@ infixr 5 :~
 . . .
 
 ```haskell
-h1 :: W 10 8
-h2 :: W 8  5
-o  :: W 5  2
+h1 :: Weight 10 8
+h2 :: Weight 8  5
+o  :: Weight 5  2
 
-h1 :~ h2 :~ o :: Network 10 '[8, 5] 2
-
-h2 :~ h1 :~ o -- type error
+O o             :: Network 5  '[]     2
+h1 :~ h2 :~ O o :: Network 10 '[8, 5] 2
+h2 :~ h1 :~ O o -- type error
 ```
 
 ## Running

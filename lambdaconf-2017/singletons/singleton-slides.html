@@ -221,13 +221,13 @@ doorStatus <span class="fu">=</span> doorStatus&#39; singDS</code></pre></div>
 </section>
 <section id="initialize-door" class="slide level2">
 <h2>Initialize Door</h2>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initializeDoor&#39; ::</span> <span class="dt">Sing</span> s <span class="ot">-&gt;</span> <span class="dt">Door</span> s
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initializeDoor&#39; ::</span> <span class="dt">SingDS</span> s <span class="ot">-&gt;</span> <span class="dt">Door</span> s
 initializeDoor&#39; _ _ <span class="fu">=</span> <span class="dt">UnsafeMkDoor</span></code></pre></div>
 <div class="fragment">
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="fu">:</span>t initializeDoor&#39; <span class="dt">SOpened</span>
 initializeDoor <span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Opened</span>
 ghci<span class="fu">&gt;</span> <span class="fu">:</span>t initializeDoor&#39; <span class="dt">SClosed</span>
-initializeDoor <span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Closed</span></code></pre></div>
+initializeDoor <span class="dt">SClosed</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Closed</span></code></pre></div>
 </div>
 </section>
 <section id="initialize-door-1" class="slide level2">
@@ -292,10 +292,12 @@ ghci<span class="fu">&gt;</span> <span class="kw">case</span> myDoor <span class
   |])</code></pre></div>
 <div class="fragment">
 <p>This creates three types and three constructors:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Sing</span><span class="ot"> ::</span> <span class="dt">DoorState</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- not the actual code, but essentially what happens</span>
+<span class="kw">data</span> <span class="dt">Sing</span><span class="ot"> ::</span> <span class="dt">DoorState</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
     <span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;Opened</span>
     <span class="dt">SClosed</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;Closed</span>
     <span class="dt">SLocked</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;Locked</span></code></pre></div>
+<p><code>Sing</code> is a poly-kinded type constructor (family):</p>
 </div>
 </section>
 <section id="the-singletons-way-1" class="slide level2">
@@ -307,18 +309,18 @@ ghci<span class="fu">&gt;</span> <span class="kw">case</span> myDoor <span class
     sing <span class="fu">=</span> <span class="dt">SClosed</span>
 <span class="kw">instance</span> <span class="dt">SingI</span> <span class="ch">&#39;Locked where</span>
     sing <span class="fu">=</span> <span class="dt">SLocked</span></code></pre></div>
-<p>And some more stuff too.</p>
+<p>(<code>SingI</code> is a poly-kinded typeclass)</p>
 </section>
-<section id="the-singletons-way-2" class="slide level2">
-<h2>The singletons way</h2>
-<p><code>Sing</code> is a poly-kinded type constructor (family):</p>
+<section id="examples" class="slide level2">
+<h2>Examples</h2>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">STrue</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;True</span>
 <span class="dt">SJust</span> <span class="dt">SFalse</span><span class="ot"> ::</span> <span class="dt">Sing</span> (<span class="ch">&#39;Just &#39;</span><span class="dt">True</span>)
 <span class="dt">SOpened</span> <span class="ot">`SCons`</span> <span class="dt">SClosed</span> <span class="ot">`SCons`</span> <span class="dt">SNil</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;[ &#39;</span><span class="dt">Opened</span>, <span class="ch">&#39;Closed ]</span></code></pre></div>
-<p><code>SingI</code> is a poly-kinded typeclass.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span><span class="ot"> sing ::</span> <span class="dt">Sing</span> <span class="ch">&#39;True&#39;</span>
+<span class="dt">STrue</span></code></pre></div>
 </section>
-<section id="some-more-stuff" class="slide level2">
-<h2>Some more stuff</h2>
+<section id="other-stuff-created-from-the-library" class="slide level2">
+<h2>Other stuff created from the library</h2>
 <p>Some other convenient features:</p>
 <pre class="hakell"><code>ghci&gt; fromSing SOpened
 Opened</code></pre>
@@ -330,8 +332,8 @@ ghci<span class="fu">&gt;</span> <span class="kw">case</span> s <span class="kw"
         <span class="dt">SomeSing</span> <span class="dt">SClosed</span> <span class="ot">-&gt;</span> <span class="st">&quot;SClosed.&quot;</span>
         <span class="dt">SomeSing</span> <span class="dt">SLocked</span> <span class="ot">-&gt;</span> <span class="st">&quot;SLocked.&quot;</span></code></pre></div>
 </section>
-<section id="non-trivial-type-dependencies" class="slide level2">
-<h2>Non-trivial type dependencies</h2>
+<section id="non-trivial-type-logic" class="slide level2">
+<h2>Non-trivial type logic</h2>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">knock ::</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
 knock <span class="fu">=</span> <span class="co">-- ??</span></code></pre></div>
 <p>We want to allow the user to knock on a closed or locked door, but not an opened door.</p>
