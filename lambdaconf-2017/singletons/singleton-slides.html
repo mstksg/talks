@@ -149,7 +149,7 @@ initializeDoor <span class="dt">Opened</span><span class="ot"> ::</span> <span c
 <section id="the-fundamental-issue-in-haskell" class="slide level2">
 <h2>The Fundamental Issue in Haskell</h2>
 <ul>
-<li class="fragment">In Haskell, types only exist at runtime. They are <strong>erased</strong> at runtime.</li>
+<li class="fragment">In Haskell, types only exist at <em>compile-time</em>. They are <strong>erased</strong> at runtime.</li>
 <li class="fragment">This is a good thing for performance! Types incur no runtime overhead!</li>
 <li class="fragment">But it makes functions like <code>doorStatus</code> fundamentally unwritable without fancy typeclasses.</li>
 <li class="fragment">...or does it?</li>
