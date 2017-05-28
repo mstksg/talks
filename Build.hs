@@ -1,9 +1,11 @@
 #!/usr/bin/env stack
 -- stack --install-ghc runghc --package shake
 
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE ViewPatterns     #-}
 
 import           Control.Monad
+import           Data.Foldable
 import           Data.List
 import           Data.Maybe
 import           Development.Shake
@@ -38,8 +40,12 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
       need (map (-<.> "html") allSrc)
 
     "clean" ~> do
-      removeFilesAfter "." (map (-<.> "pdf") allSrc)
-      removeFilesAfter "." (map (-<.> "html") allSrc)
+      removeFilesAfter "."    (map (-<.> "pdf" ) allSrc)
+      removeFilesAfter "."    (map (-<.> "html") allSrc)
+      let revealDirs = map (\f -> takeDirectory f </> "reveal.js") allSrc
+      traverse_ @_ @_ @_ @() (cmd "git" "rm" "--ignore-unmatch") revealDirs
+      removeFilesAfter ".git/modules" ((++ "//") <$> revealDirs)
+      removeFilesAfter "." ((++ "//") <$> revealDirs)
       removeFilesAfter ".shake" ["//*"]
 
     "//*.pdf" %> \f -> do
@@ -55,13 +61,13 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
                    sf
                    (maybe "" takeFileName conf)
 
-
     "//*.html" %> \f -> do
       let src = f -<.> "md"
           (sd, sf) = splitFileName src
-          conf = sd </> ".revealjs.yaml"
+          conf     = sd </> ".revealjs.yaml"
+          reveal   = sd </> "reveal.js/.git"
       conf <- (conf <$) . guard <$> doesFileExist conf
-      need $ src : maybeToList conf
+      need $ src : reveal : maybeToList conf
       cmd (Cwd sd)
           "pandoc" "-t revealjs"
                    "-o " (takeFileName f)
@@ -69,4 +75,10 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
                    sf
                    (maybe "" takeFileName conf)
 
+    "//*/reveal.js/.git" %> \f -> do
+      let pths = splitPath f
+          base = joinPath $ zipWith const pths (drop 2 pths)
+      cmd (Cwd base)
+          "git" "submodule add"
+                "https://github.com/hakimel/reveal.js/"
 
