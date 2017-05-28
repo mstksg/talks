@@ -1,5 +1,5 @@
-Asia Oceania Geosciences Society (AOGS) 2016
-============================================
+[Asia Oceania Geosciences Society (AOGS) 2016](aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Asia Oceania Geosciences Society (AOGS) 2016")
+=========================================================================================================================================
 
 *(Annotated)*
 

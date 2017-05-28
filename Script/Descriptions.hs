@@ -55,7 +55,7 @@ flattenDescr :: Descr -> [Section]
 flattenDescr = cata $ \case
     Descr{..} ->
       let link = case descrNode of
-            DescrFile fp -> descrPath </> fp
+            DescrFile fp -> normalise $ descrPath </> fp
             DescrDir _   -> descrPath
           descr = maybe [] parseDescr descrDesc
           newSec = Sec 1 descrTitle link descr
@@ -71,11 +71,13 @@ flattenDescr = cata $ \case
     bumpSection :: FilePath -> Section -> Section
     bumpSection fp s@Sec{..} =
         s { secLevel = secLevel + 1
-          , secPath  = fp </> secPath
+          , secPath  = normalise $ fp </> secPath
           }
 
 toBlocks :: Section -> [Block]
-toBlocks Sec{..} = Header secLevel nullAttr [Str secTitle] : secBody
+toBlocks Sec{..} = Header secLevel nullAttr [link] : secBody
+  where
+    link = Link nullAttr [Str secTitle] (secPath, secTitle)
 
 descrPandoc :: Descr -> Pandoc
 descrPandoc = Pandoc mempty . concatMap toBlocks . flattenDescr

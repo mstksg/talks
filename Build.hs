@@ -91,13 +91,18 @@ main = do
 
       "clean" ~> do
         removeFilesAfter ".shake" ["//*"]
+        need ["clean-renders","clean-readme"]
+
+      "clean-renders" ~> do
         removeFilesAfter "."    (map (-<.> "pdf" ) allSrc)
         removeFilesAfter "."    (map (-<.> "html") allSrc)
-        removeFilesAfter "."    readmeFiles
         let revealDirs = map (\f -> takeDirectory f </> "reveal.js") allSrc
         traverse_ @_ @_ @_ @() (cmd "git" "rm" "--ignore-unmatch" "-r" "--cached") revealDirs
         removeFilesAfter ".git/modules" ((++ "//") <$> revealDirs)
         removeFilesAfter "." ((++ "//") <$> revealDirs)
+
+      "clean-readme" ~> do
+        removeFilesAfter "."    readmeFiles
 
 
 

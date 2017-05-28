@@ -1,5 +1,5 @@
-Enhancing Your Haskell With Dependently Typed Programming
-=========================================================
+[Enhancing Your Haskell With Dependently Typed Programming](dependent-types/dependent-types.html "Enhancing Your Haskell With Dependently Typed Programming")
+=============================================================================================================================================================
 
 *A Case Study With Neural Networks*
 

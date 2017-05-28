@@ -1,15 +1,15 @@
-Talks
-=====
+[Talks](. "Talks")
+==================
 
 Collection of slides, notes, and posters for public talks I've given,
 annotated when possible.
 
-LambdaConf 2017
----------------
+[LambdaConf 2017](lambdaconf-2017 "LambdaConf 2017")
+----------------------------------------------------
 
 Functional programming conference in Boulder, CO.
 
-### Singletons and You
+### [Singletons and You](lambdaconf-2017/singletons/singleton-slides.html "Singletons and You")
 
 > Let's scratch the surface of the power of Richard Eisenberg's
 > *singletons* library and peek through the doors of opportunity that it
@@ -19,7 +19,7 @@ Functional programming conference in Boulder, CO.
 > Look past the hype and see how the singletons library can benefit your
 > programs today through type safety and dependently typed programming!
 
-### Enhancing Your Haskell With Dependently Typed Programming
+### [Enhancing Your Haskell With Dependently Typed Programming](lambdaconf-2017/dependent-types/dependent-types.html "Enhancing Your Haskell With Dependently Typed Programming")
 
 *A Case Study With Neural Networks*
 
@@ -46,8 +46,8 @@ Functional programming conference in Boulder, CO.
 Slides and example code provided in
 [directory](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types).
 
-Asia Oceania Geosciences Society (AOGS) 2016
---------------------------------------------
+[Asia Oceania Geosciences Society (AOGS) 2016](aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Asia Oceania Geosciences Society (AOGS) 2016")
+-----------------------------------------------------------------------------------------------------------------------------------------
 
 *(Annotated)*
 
@@ -56,8 +56,8 @@ of Recurrent Neural Networks to analyze and predict the interactions
 between the El Nino Souther Oscillation and the California Drought for
 the winter of 2015-2016.
 
-LambdaConf 2016
----------------
+[LambdaConf 2016](lambdaconf-2016/FCDIP-LambdaConf16.pptx "LambdaConf 2016")
+----------------------------------------------------------------------------
 
 *(Annotated)*
 
@@ -65,8 +65,8 @@ Functional programming conference in Boulder, CO. Talk was on
 applications of the Functor Design Pattern and Comonads/Cokleisli
 Composition to Digital Image Processing
 
-Chapman University Computational Sciences Graduate Conference (CSCG) 2016
--------------------------------------------------------------------------
+[Chapman University Computational Sciences Graduate Conference (CSCG) 2016](csgc-2016/NeuralNetwork-ENSO-Precipitation.pptx "Chapman University Computational Sciences Graduate Conference (CSCG) 2016")
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Graduate research conference for Chapman University's Computational and
 Data Science program. Presented on the application of Recurrent Neural
@@ -74,8 +74,8 @@ Networks to analyze and predict the interactions between the El Nino
 Souther Oscillation and the California Drought for the winter of
 2015-2016.
 
-Chapman University Computational Sciences Graduate Conference (CSCG) 2015
--------------------------------------------------------------------------
+[Chapman University Computational Sciences Graduate Conference (CSCG) 2015](csgc-2015/csgc-functors-comonads-dip-slides.pptx "Chapman University Computational Sciences Graduate Conference (CSCG) 2015")
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 *(Annotated)*
 
