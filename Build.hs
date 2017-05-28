@@ -1,6 +1,7 @@
 #!/usr/bin/env stack
 -- stack --install-ghc runghc --package shake
 
+{-# LANGUAGE TupleSections    #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ViewPatterns     #-}
 
@@ -41,41 +42,38 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
 
     "clean" ~> do
       removeFilesAfter ".shake" ["//*"]
-      liftIO $ do
-        removeFiles "."    (map (-<.> "pdf" ) allSrc)
-        removeFiles "."    (map (-<.> "html") allSrc)
-        let revealDirs = map (\f -> takeDirectory f </> "reveal.js") allSrc
-        traverse_ @_ @_ @_ @() (cmd "git" "rm" "--ignore-unmatch" "-r" "--cached") revealDirs
-        removeFiles ".git/modules" ((++ "//") <$> revealDirs)
-        removeFiles "." ((++ "//") <$> revealDirs)
+      removeFilesAfter "."    (map (-<.> "pdf" ) allSrc)
+      removeFilesAfter "."    (map (-<.> "html") allSrc)
+      let revealDirs = map (\f -> takeDirectory f </> "reveal.js") allSrc
+      traverse_ @_ @_ @_ @() (cmd "git" "rm" "--ignore-unmatch" "-r" "--cached") revealDirs
+      removeFilesAfter ".git/modules" ((++ "//") <$> revealDirs)
+      removeFilesAfter "." ((++ "//") <$> revealDirs)
 
 
     "//*.pdf" %> \f -> do
       let src = f -<.> "md"
           (sd, sf) = splitFileName src
-          conf = sd </> ".beamer.yaml"
-      conf <- (conf <$) . guard <$> doesFileExist conf
-      need $ src : maybeToList conf
+      (updirs, confs) <- getConfigs sd ".beamer.yaml"
+      need $ src : confs
       cmd (Cwd sd)
           "pandoc" "-t beamer"
                    "-o " (takeFileName f)
                    "--standalone"
                    sf
-                   (maybe "" takeFileName conf)
+                   (unwords ((updirs </>) <$> confs))
 
     "//*.html" %> \f -> do
       let src = f -<.> "md"
           (sd, sf) = splitFileName src
-          conf     = sd </> ".revealjs.yaml"
           reveal   = sd </> "reveal.js/.git"
-      conf <- (conf <$) . guard <$> doesFileExist conf
-      need $ src : reveal : maybeToList conf
+      (updirs, confs) <- getConfigs sd ".revealjs.yaml"
+      need $ src : reveal : confs
       cmd (Cwd sd)
           "pandoc" "-t revealjs"
                    "-o " (takeFileName f)
                    "--standalone"
                    sf
-                   (maybe "" takeFileName conf)
+                   (unwords ((updirs </>) <$> confs))
 
     "//*/reveal.js/.git" %> \f -> do
       liftIO $ removeFiles "." [takeDirectory f]
@@ -83,3 +81,12 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
                 "https://github.com/hakimel/reveal.js/"
                 (takeDirectory f)
 
+getConfigs :: FilePath -> String -> Action (FilePath, [FilePath])
+getConfigs (splitPath -> dirs) fn =
+    fmap ((updirs,) . catMaybes) . forM confs $ \c -> do
+      (c <$) . guard <$> doesFileExist c
+  where
+    updirs = joinPath (".." <$ dirs)
+    confs = map (joinPath . (++ [fn]))
+          . reverse
+          $ inits dirs
