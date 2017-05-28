@@ -1,5 +1,5 @@
-[LambdaConf 2016](lambdaconf-2016/FCDIP-LambdaConf16.pptx "LambdaConf 2016")
-============================================================================
+[LambdaConf 2016](https://mstksg.github.io/talks/lambdaconf-2016/FCDIP-LambdaConf16.pptx "LambdaConf 2016")
+===========================================================================================================
 
 *(Annotated)*
 

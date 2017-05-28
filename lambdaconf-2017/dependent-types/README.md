@@ -1,5 +1,5 @@
-[Enhancing Your Haskell With Dependently Typed Programming](dependent-types/dependent-types.html "Enhancing Your Haskell With Dependently Typed Programming")
-=============================================================================================================================================================
+[Enhancing Your Haskell With Dependently Typed Programming](https://mstksg.github.io/talks/dependent-types/dependent-types.html "Enhancing Your Haskell With Dependently Typed Programming")
+============================================================================================================================================================================================
 
 *A Case Study With Neural Networks*
 
@@ -23,5 +23,5 @@
 > Super-charge the correctness of your code incrementally and find new
 > ways to make the compiler work for you today!
 
-Slides and example code provided in
-[directory](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types).
+Slides and example code provided in [the
+directory](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types).

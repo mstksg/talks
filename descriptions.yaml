@@ -44,7 +44,7 @@ subdirs:
           > Super-charge the correctness of your code incrementally and find new ways to
           > make the compiler work for you today!
 
-          Slides and example code provided in [directory][deptype].
+          Slides and example code provided in [the directory][deptype].
 
           [deptype]: https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types
         link: dependent-types.html

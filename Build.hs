@@ -29,9 +29,12 @@ validSrc :: FilePath -> Bool
 validSrc src = not ("README"    `isInfixOf` src)
             && not ("reveal.js" `isInfixOf` src)
 
+pagesBase :: FilePath
+pagesBase = "https://mstksg.github.io/talks"
+
 main :: IO ()
 main = do
-    readmes <- M.fromList . maybe [] descrPandocs
+    readmes <- M.fromList . maybe [] (descrPandocs pagesBase)
                 <$> decodeFile "descriptions.yaml"
     let readmeFiles = map (normalise . (</> "README.md")) $ M.keys readmes
     print readmeFiles

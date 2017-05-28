@@ -74,16 +74,17 @@ flattenDescr = cata $ \case
           , secPath  = normalise $ fp </> secPath
           }
 
-toBlocks :: Section -> [Block]
-toBlocks Sec{..} = Header secLevel nullAttr [link] : secBody
+toBlocks :: FilePath -> Section -> [Block]
+toBlocks baseURL Sec{..} = Header secLevel nullAttr [link] : secBody
   where
-    link = Link nullAttr [Str secTitle] (secPath, secTitle)
+    link = Link nullAttr [Str secTitle] (baseURL </> secPath, secTitle)
 
-descrPandoc :: Descr -> Pandoc
-descrPandoc = Pandoc mempty . concatMap toBlocks . flattenDescr
+descrPandoc :: FilePath -> Descr -> Pandoc
+descrPandoc baseURL =
+    Pandoc mempty . concatMap (toBlocks baseURL) . flattenDescr
 
-descrPandocs :: Descr -> [(FilePath, Pandoc)]
-descrPandocs = (map . second) descrPandoc . unfoldDescr
+descrPandocs :: FilePath -> Descr -> [(FilePath, Pandoc)]
+descrPandocs baseURL = (map . second) (descrPandoc baseURL) . unfoldDescr
 
 unfoldDescr :: Descr -> [(FilePath, Descr)]
 unfoldDescr = para $ \case
