@@ -40,13 +40,15 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
       need (map (-<.> "html") allSrc)
 
     "clean" ~> do
-      removeFilesAfter "."    (map (-<.> "pdf" ) allSrc)
-      removeFilesAfter "."    (map (-<.> "html") allSrc)
-      let revealDirs = map (\f -> takeDirectory f </> "reveal.js") allSrc
-      traverse_ @_ @_ @_ @() (cmd "git" "rm" "--ignore-unmatch") revealDirs
-      removeFilesAfter ".git/modules" ((++ "//") <$> revealDirs)
-      removeFilesAfter "." ((++ "//") <$> revealDirs)
       removeFilesAfter ".shake" ["//*"]
+      liftIO $ do
+        removeFiles "."    (map (-<.> "pdf" ) allSrc)
+        removeFiles "."    (map (-<.> "html") allSrc)
+        let revealDirs = map (\f -> takeDirectory f </> "reveal.js") allSrc
+        traverse_ @_ @_ @_ @() (cmd "git" "rm" "--ignore-unmatch" "-r" "--cached") revealDirs
+        removeFiles ".git/modules" ((++ "//") <$> revealDirs)
+        removeFiles "." ((++ "//") <$> revealDirs)
+
 
     "//*.pdf" %> \f -> do
       let src = f -<.> "md"
@@ -76,9 +78,8 @@ main = getDirectoryFilesIO "" ["//*.md"] >>=
                    (maybe "" takeFileName conf)
 
     "//*/reveal.js/.git" %> \f -> do
-      let pths = splitPath f
-          base = joinPath $ zipWith const pths (drop 2 pths)
-      cmd (Cwd base)
-          "git" "submodule add"
+      liftIO $ removeFiles "." [takeDirectory f]
+      cmd "git" "submodule add"
                 "https://github.com/hakimel/reveal.js/"
+                (takeDirectory f)
 

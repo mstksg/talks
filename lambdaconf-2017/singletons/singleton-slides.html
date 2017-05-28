@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Justin Le https://blog.jle.im (justin@jle.im)">
+  <title>Singletons and You</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <link rel="stylesheet" href="reveal.js/css/theme/beige.css" id="theme">
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+  <h1 class="title">Singletons and You</h1>
+  <p class="author">Justin Le https://blog.jle.im (justin@jle.im)</p>
+  <p class="date">Lambdaconf 2017, May 27, 2017</p>
+</section>
+
+<section id="preface" class="slide level2">
+<h2>Preface</h2>
+<p>Slide available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html</a>.</p>
+<div class="fragment">
+<p>GHC extensions (potentially) used:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE GADTs                #-}</span>
+<span class="ot">{-# LANGUAGE KindSignatures       #-}</span>
+<span class="ot">{-# LANGUAGE LambdaCase           #-}</span>
+<span class="ot">{-# LANGUAGE RankNTypes           #-}</span>
+<span class="ot">{-# LANGUAGE RankNTypes           #-}</span>
+<span class="ot">{-# LANGUAGE ScopedTypeVariables  #-}</span>
+<span class="ot">{-# LANGUAGE TemplateHaskell      #-}</span>
+<span class="ot">{-# LANGUAGE TypeFamilies         #-}</span>
+<span class="ot">{-# LANGUAGE TypeInType           #-}</span>
+<span class="ot">{-# LANGUAGE TypeOperators        #-}</span>
+<span class="ot">{-# LANGUAGE UndecidableInstances #-}</span>
+
+<span class="kw">import </span><span class="dt">Data.Kind</span>        <span class="co">-- to get type Type = *</span>
+<span class="kw">import </span><span class="dt">Data.Singletons</span></code></pre></div>
+</div>
+</section>
+<section id="safety-with-phantom-types" class="slide level2">
+<h2>Safety with Phantom Types</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">DoorState</span> <span class="fu">=</span> <span class="dt">Opened</span> <span class="fu">|</span> <span class="dt">Closed</span> <span class="fu">|</span> <span class="dt">Locked</span>
+  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)
+
+<span class="kw">data</span> <span class="dt">Door</span> (<span class="ot">s ::</span> <span class="dt">DoorState</span>) <span class="fu">=</span> <span class="dt">UnsafeMkDoor</span>
+
+<span class="co">-- alternatively</span>
+<span class="kw">data</span> <span class="dt">Door</span><span class="ot"> ::</span> <span class="dt">DoorState</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
+    <span class="dt">UnsafeMkDoor</span><span class="ot"> ::</span> <span class="dt">Door</span> s</code></pre></div>
+</section>
+<section id="other-similar-examples" class="slide level2">
+<h2>Other similar examples</h2>
+<ul>
+<li>State machines (socket connections, file handles, opened/closed)</li>
+<li>Refinement types</li>
+<li>&quot;Tagged&quot; types (santized/unsantized strings)</li>
+</ul>
+</section>
+<section id="phantom-types-in-action" class="slide level2">
+<h2>Phantom types in action</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">closeDoor ::</span> <span class="dt">Door</span> <span class="ch">&#39;Opened -&gt; Door &#39;</span><span class="dt">Closed</span>
+closeDoor <span class="dt">UnsafeMkDoor</span> <span class="fu">=</span> <span class="dt">UnsafeMkDoor</span></code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">openDoor  ::</span> <span class="dt">Door</span> <span class="ch">&#39;Closed -&gt; Door &#39;</span><span class="dt">Opened</span>
+openDoor <span class="dt">UnsafeMkDoor</span> <span class="fu">=</span> <span class="dt">UnsafeMkDoor</span></code></pre></div>
+</div>
+</section>
+<section id="phantom-types-in-action-1" class="slide level2">
+<h2>Phantom types in action</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">doorStatus ::</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">DoorState</span>
+doorStatus <span class="fu">=</span> <span class="co">-- ????</span></code></pre></div>
+<p>We have a problem.</p>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">doorStatus ::</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">DoorState</span>
+doorStatus <span class="dt">UnsafeMkDoor</span> <span class="fu">=</span> <span class="co">-- s ???</span></code></pre></div>
+</div>
+</section>
+<section id="more-problems" class="slide level2">
+<h2>More Problems</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initalizeDoor ::</span> <span class="dt">DoorStatus</span> <span class="ot">-&gt;</span> <span class="dt">Door</span> s
+initializeDoor <span class="fu">=</span> \<span class="kw">case</span>
+    <span class="dt">Opened</span> <span class="ot">-&gt;</span> <span class="dt">UnsafeMkDoor</span>
+    <span class="dt">Closed</span> <span class="ot">-&gt;</span> <span class="dt">UnsafeMkDoor</span>
+    <span class="dt">Locked</span> <span class="ot">-&gt;</span> <span class="dt">UnsafeMkDoor</span></code></pre></div>
+<div class="fragment">
+<p>Neat, but does this work?</p>
+</div>
+</section>
+<section id="more-problems-1" class="slide level2">
+<h2>More Problems</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="fu">:</span>t initializeDoor <span class="dt">Opened</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Closed</span>
+initializeDoor <span class="dt">Opened</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Closed</span></code></pre></div>
+<p>Oops.</p>
+</section>
+<section id="the-fundamental-issue-in-haskell" class="slide level2">
+<h2>The Fundamental Issue in Haskell</h2>
+<ul>
+<li class="fragment">In Haskell, types only exist at <em>compile-time</em>. They are <strong>erased</strong> at runtime.</li>
+<li class="fragment">This is a good thing for performance! Types incur no runtime overhead!</li>
+<li class="fragment">But it makes functions like <code>doorStatus</code> fundamentally unwritable without fancy typeclasses.</li>
+<li class="fragment">...or does it?</li>
+</ul>
+</section>
+<section id="the-singleton-pattern" class="slide level2">
+<h2>The Singleton Pattern</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SingDS</span><span class="ot"> ::</span> <span class="dt">DoorStatus</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
+    <span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">SingDS</span> <span class="ch">&#39;Opened</span>
+    <span class="dt">SClosed</span><span class="ot"> ::</span> <span class="dt">SingDS</span> <span class="ch">&#39;Closed</span>
+    <span class="dt">SLocked</span><span class="ot"> ::</span> <span class="dt">SingDS</span> <span class="ch">&#39;Locked</span></code></pre></div>
+<p>Creates three constructors:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">SingDS</span> <span class="ch">&#39;Opened</span>
+<span class="dt">SClosed</span><span class="ot"> ::</span> <span class="dt">SingDS</span> <span class="ch">&#39;Closed</span>
+<span class="dt">SLocked</span><span class="ot"> ::</span> <span class="dt">SingDS</span> <span class="ch">&#39;Locked</span></code></pre></div>
+</section>
+<section id="the-singleton-pattern-1" class="slide level2">
+<h2>The Singleton Pattern</h2>
+<ul>
+<li class="fragment">A <strong>singleton</strong> is a type that has exactly one inhabited value.</li>
+<li class="fragment">There is only one value of type <code>SingDS 'Opened</code>, and only one value of type <code>SingDS 'Closed</code>.</li>
+<li class="fragment">The constructor that a <code>SingDS s</code> uses reveals to us what <code>s</code> is.</li>
+</ul>
+</section>
+<section id="the-singleton-pattern-2" class="slide level2">
+<h2>The Singleton Pattern</h2>
+<p>With our new singletons, we can essentially <strong>pattern match</strong> on types:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">showSingDS ::</span> <span class="dt">SingDS</span> s <span class="ot">-&gt;</span> <span class="dt">String</span>
+showSingDS <span class="fu">=</span> \<span class="kw">case</span>
+    <span class="dt">SOpened</span> <span class="ot">-&gt;</span> <span class="st">&quot;Opened&quot;</span>
+    <span class="dt">SClosed</span> <span class="ot">-&gt;</span> <span class="st">&quot;Closed&quot;</span>
+    <span class="dt">SLocked</span> <span class="ot">-&gt;</span> <span class="st">&quot;Locked&quot;</span></code></pre></div>
+<div class="fragment">
+<p>Alone like this, it's a bit boring. We didn't need GADTs for this.</p>
+</div>
+</section>
+<section id="door-status" class="slide level2">
+<h2>Door Status</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">doorStatus&#39; ::</span> <span class="dt">SingDS</span> s <span class="ot">-&gt;</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">DoorState</span>
+doorStatus&#39; <span class="fu">=</span> \<span class="kw">case</span>
+    <span class="dt">SOpened</span> <span class="ot">-&gt;</span> \_ <span class="ot">-&gt;</span> <span class="st">&quot;Door is opened&quot;</span>
+    <span class="dt">SClosed</span> <span class="ot">-&gt;</span> \_ <span class="ot">-&gt;</span> <span class="st">&quot;Door is closed&quot;</span>
+    <span class="dt">SLocked</span> <span class="ot">-&gt;</span> \_ <span class="ot">-&gt;</span> <span class="st">&quot;Door is locked&quot;</span></code></pre></div>
+<ul>
+<li class="fragment">GADT-ness allows us to enforce that the <code>s</code> in <code>SingDS s</code> is the same as the <code>s</code> in our <code>Door</code>.</li>
+<li class="fragment">Singleton property means that <code>SingDS s</code> has a one-to-one correspondence with its constructors.</li>
+<li class="fragment">Pattern matching on that single constructor reveals to us the type of <code>Door</code>.</li>
+</ul>
+</section>
+<section id="implicit-passing" class="slide level2">
+<h2>Implicit Passing</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">SingDSI</span> s <span class="kw">where</span>
+<span class="ot">    singDS ::</span> <span class="dt">SingDSI</span> s
+
+<span class="kw">instance</span> <span class="dt">SingDSI</span> <span class="ch">&#39;Opened where</span>
+    singDS <span class="fu">=</span> <span class="dt">SOpened</span>
+<span class="kw">instance</span> <span class="dt">SingDSI</span> <span class="ch">&#39;Closed where</span>
+    singDS <span class="fu">=</span> <span class="dt">SClosed</span>
+<span class="kw">instance</span> <span class="dt">SingDSI</span> <span class="ch">&#39;Locked where</span>
+    singDS <span class="fu">=</span> <span class="dt">SLocked</span></code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">doorStatus ::</span> <span class="dt">SingDSI</span> s <span class="ot">=&gt;</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">DoorState</span>
+doorStatus <span class="fu">=</span> doorStatus&#39; singDS</code></pre></div>
+</div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> doorStatus (<span class="dt">UnsafeMkDoor</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Locked)</span>
+<span class="dt">Door</span> is locked<span class="fu">!</span></code></pre></div>
+</div>
+</section>
+<section id="initialize-door" class="slide level2">
+<h2>Initialize Door</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initializeDoor&#39; ::</span> <span class="dt">SingDS</span> s <span class="ot">-&gt;</span> <span class="dt">Door</span> s
+initializeDoor&#39; _ _ <span class="fu">=</span> <span class="dt">UnsafeMkDoor</span></code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="fu">:</span>t initializeDoor&#39; <span class="dt">SOpened</span>
+initializeDoor <span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Opened</span>
+ghci<span class="fu">&gt;</span> <span class="fu">:</span>t initializeDoor&#39; <span class="dt">SClosed</span>
+initializeDoor <span class="dt">SClosed</span><span class="ot"> ::</span> <span class="dt">Door</span> <span class="ch">&#39;Closed</span></code></pre></div>
+</div>
+</section>
+<section id="initialize-door-1" class="slide level2">
+<h2>Initialize Door</h2>
+<p>Implicit passing style:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initializeDoor ::</span> <span class="dt">SingDSI</span> s <span class="ot">=&gt;</span> <span class="dt">Door</span> s
+initializeDoor <span class="fu">=</span> initializeDoor&#39; singDS</code></pre></div>
+</section>
+<section id="singds-vs.-singdsi" class="slide level2">
+<h2>SingDS vs. SingDSI</h2>
+<ul>
+<li class="fragment">Really, <code>SingDS s -&gt;</code> is the same as <code>SingDSI s =&gt;</code></li>
+<li class="fragment">The two are the same way of providing the same information to the compiler, and at runtime.</li>
+<li class="fragment">We can use the two styles interchangebly.</li>
+<li class="fragment">One is <strong>explicitly passing the type</strong>, the other is <strong>explicitly passing the type</strong>.</li>
+</ul>
+</section>
+<section id="ditching-the-phantom" class="slide level2">
+<h2>Ditching the phantom</h2>
+<p>Sometimes we don't care about what the status of our door is, and we want the type system to relax.</p>
+<div class="fragment">
+<p>This is essentially the same as saying that the status of our door is a runtime property that we do not want to (or sometimes can't) check at compile-time.</p>
+</div>
+</section>
+<section id="ditching-the-phantom-1" class="slide level2">
+<h2>Ditching the phantom</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SomeDoor</span><span class="ot"> ::</span> <span class="dt">Type</span> <span class="kw">where</span>
+    <span class="dt">MkSomeDoor</span><span class="ot"> ::</span> <span class="dt">SingDS</span> s <span class="ot">=&gt;</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">SomeDoor</span></code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="kw">let</span> myDoor <span class="fu">=</span> <span class="dt">MkSomeDoor</span> (initializeDoor <span class="dt">SOpened</span>)
+ghci<span class="fu">&gt;</span> <span class="fu">:</span>t myDoor
+<span class="ot">myDoor ::</span> <span class="dt">SomeDoor</span>
+ghci<span class="fu">&gt;</span> <span class="kw">case</span> myDoor <span class="kw">of</span> <span class="dt">MkSomeDoor</span> d <span class="ot">-&gt;</span> doorStatus d
+<span class="dt">Door</span> is opened<span class="fu">.</span></code></pre></div>
+</div>
+</section>
+<section id="runtime-deferred-types" class="slide level2">
+<h2>Runtime-deferred types</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">initializeSomeDoor ::</span> <span class="dt">DoorStatus</span> <span class="ot">-&gt;</span> <span class="dt">SomeDoor</span>
+initializeSomeDoor <span class="fu">=</span> \<span class="kw">case</span>
+    <span class="dt">Opened</span> <span class="ot">-&gt;</span> <span class="dt">SomeDoor</span> (initialiseDoor&#39; <span class="dt">SOpened</span>)
+    <span class="dt">Closed</span> <span class="ot">-&gt;</span> <span class="dt">SomeDoor</span> (initialiseDoor&#39; <span class="dt">SClosed</span>)
+    <span class="dt">Locked</span> <span class="ot">-&gt;</span> <span class="dt">SomeDoor</span> (initialiseDoor&#39; <span class="dt">SLocked</span>)</code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="kw">let</span> myDoor <span class="fu">=</span> initializeSomeDoor <span class="dt">Locked</span>
+ghci<span class="fu">&gt;</span> <span class="fu">:</span>t myDoor
+<span class="ot">myDoor ::</span> <span class="dt">SomeDoor</span>
+ghci<span class="fu">&gt;</span> <span class="kw">case</span> myDoor <span class="kw">of</span> <span class="dt">MkSomeDoor</span> d <span class="ot">-&gt;</span> doorStatus d
+<span class="dt">Door</span> is locked<span class="fu">.</span></code></pre></div>
+</div>
+</section>
+<section id="the-singletons-library" class="slide level2">
+<h2>The Singletons Library</h2>
+<p>The singletons library provides a unified framework for creating and working with singletons for different types (not just <code>DoorStatus</code>), and also for functions on those types.</p>
+<p><a href="http://hackage.haskell.org/package/singletons" class="uri">http://hackage.haskell.org/package/singletons</a></p>
+</section>
+<section id="the-singletons-way" class="slide level2">
+<h2>The singletons way</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span>(singletons [d|
+  data DoorState = Opened | Closed | Locked
+    deriving (Show, Eq)
+  |])</code></pre></div>
+<div class="fragment">
+<p>This creates three types and three constructors:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- not the actual code, but essentially what happens</span>
+<span class="kw">data</span> <span class="dt">Sing</span><span class="ot"> ::</span> <span class="dt">DoorState</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
+    <span class="dt">SOpened</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;Opened</span>
+    <span class="dt">SClosed</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;Closed</span>
+    <span class="dt">SLocked</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;Locked</span></code></pre></div>
+<p><code>Sing</code> is a poly-kinded type constructor (family):</p>
+</div>
+</section>
+<section id="the-singletons-way-1" class="slide level2">
+<h2>The singletons way</h2>
+<p>And also</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">SingI</span> <span class="ch">&#39;Opened where</span>
+    sing <span class="fu">=</span> <span class="dt">SOpened</span>
+<span class="kw">instance</span> <span class="dt">SingI</span> <span class="ch">&#39;Closed where</span>
+    sing <span class="fu">=</span> <span class="dt">SClosed</span>
+<span class="kw">instance</span> <span class="dt">SingI</span> <span class="ch">&#39;Locked where</span>
+    sing <span class="fu">=</span> <span class="dt">SLocked</span></code></pre></div>
+<p>(<code>SingI</code> is a poly-kinded typeclass)</p>
+</section>
+<section id="examples" class="slide level2">
+<h2>Examples</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">STrue</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;True</span>
+<span class="dt">SJust</span> <span class="dt">SFalse</span><span class="ot"> ::</span> <span class="dt">Sing</span> (<span class="ch">&#39;Just &#39;</span><span class="dt">True</span>)
+<span class="dt">SOpened</span> <span class="ot">`SCons`</span> <span class="dt">SClosed</span> <span class="ot">`SCons`</span> <span class="dt">SNil</span><span class="ot"> ::</span> <span class="dt">Sing</span> <span class="ch">&#39;[ &#39;</span><span class="dt">Opened</span>, <span class="ch">&#39;Closed ]</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span><span class="ot"> sing ::</span> <span class="dt">Sing</span> <span class="ch">&#39;True&#39;</span>
+<span class="dt">STrue</span></code></pre></div>
+</section>
+<section id="other-stuff-created-from-the-library" class="slide level2">
+<h2>Other stuff created from the library</h2>
+<p>Some other convenient features:</p>
+<pre class="hakell"><code>ghci&gt; fromSing SOpened
+Opened</code></pre>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> <span class="kw">let</span> s <span class="fu">=</span> toSing <span class="dt">Opened</span>
+ghci<span class="fu">&gt;</span> <span class="fu">:</span>t s
+<span class="ot">s ::</span> <span class="dt">SomeSing</span> <span class="dt">DoorStatus</span>
+ghci<span class="fu">&gt;</span> <span class="kw">case</span> s <span class="kw">of</span>
+        <span class="dt">SomeSing</span> <span class="dt">SOpened</span> <span class="ot">-&gt;</span> <span class="st">&quot;Opened.&quot;</span>
+        <span class="dt">SomeSing</span> <span class="dt">SClosed</span> <span class="ot">-&gt;</span> <span class="st">&quot;SClosed.&quot;</span>
+        <span class="dt">SomeSing</span> <span class="dt">SLocked</span> <span class="ot">-&gt;</span> <span class="st">&quot;SLocked.&quot;</span></code></pre></div>
+</section>
+<section id="non-trivial-type-logic" class="slide level2">
+<h2>Non-trivial type logic</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">knock ::</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+knock <span class="fu">=</span> <span class="co">-- ??</span></code></pre></div>
+<p>We want to allow the user to knock on a closed or locked door, but not an opened door.</p>
+<div class="fragment">
+<p>We can do this simple case using pattern matching, but it's not always feasible or scalable. We want to define a type relationship that can be used by potentially many functions.</p>
+</div>
+</section>
+<section id="singletons-to-the-rescue" class="slide level2">
+<h2>Singletons to the Rescue</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span>(singletons [d|
+  canKnock :: DoorState -&gt; Bool
+  canKnock Opened = False
+  canKnock Closed = True
+  canKnock Locked = True
+  |])</code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">knock ::</span> (<span class="dt">CanKnock</span> s <span class="fu">~</span> <span class="dt">True</span>) <span class="ot">=&gt;</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+knock _ <span class="fu">=</span> putStrLn <span class="st">&quot;knock knock!&quot;</span></code></pre></div>
+</div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> knock (initializeDoor <span class="dt">SOpened</span>)
+<span class="dt">Compile</span> <span class="dt">Error</span><span class="fu">!!!!</span>
+ghci<span class="fu">&gt;</span> knock (initializeDoor <span class="dt">SClosed</span>)
+knock knock<span class="fu">!</span></code></pre></div>
+</div>
+</section>
+<section id="singletons-to-the-rescue-1" class="slide level2">
+<h2>Singletons to the Rescue</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">tryKnock&#39; ::</span> <span class="dt">Sing</span> s <span class="ot">-&gt;</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+tryKnock&#39; s <span class="fu">=</span> <span class="kw">case</span> sCanKnock s <span class="kw">of</span>
+    <span class="dt">STrue</span>  <span class="ot">-&gt;</span> knock
+    <span class="dt">SFalse</span> <span class="ot">-&gt;</span> \_ <span class="ot">-&gt;</span> putStrLn <span class="st">&quot;Cannot knock door!&quot;</span>
+
+<span class="ot">tryKnock ::</span> <span class="dt">SingI</span> s <span class="ot">=&gt;</span> <span class="dt">Door</span> s <span class="ot">-&gt;</span> <span class="dt">IO</span> ()
+tryKnock <span class="fu">=</span> tryKnock&#39; sing</code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">ghci<span class="fu">&gt;</span> tryKnock (initializeDoor <span class="dt">SOpened</span>)
+<span class="dt">Cannot</span> knock door<span class="fu">!</span>
+ghci<span class="fu">&gt;</span> tryKnock (initializeDoor <span class="dt">SClosed</span>)
+knock knock<span class="fu">!</span></code></pre></div>
+</div>
+</section>
+<section id="vectors" class="slide level2">
+<h2>Vectors</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span>(singletons [d|
+  data N = Z | S N
+  |])
+
+<span class="kw">data</span> <span class="dt">Vec</span><span class="ot"> ::</span> <span class="dt">N</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
+    <span class="dt">VNil</span><span class="ot"> ::</span> <span class="dt">Vec</span> <span class="dt">Z</span> a
+<span class="ot">    (:*) ::</span> a <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a <span class="ot">-&gt;</span> <span class="dt">Vec</span> (<span class="dt">S</span> n) a
+
+<span class="kw">infixr</span> <span class="dv">5</span> <span class="fu">:*</span></code></pre></div>
+</section>
+<section id="the-types-demand-it" class="slide level2">
+<h2>The Types demand it</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">replicateV&#39;
+<span class="ot">    ::</span> <span class="dt">Sing</span> n
+    <span class="ot">-&gt;</span> a
+    <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a
+replicateV&#39; <span class="fu">=</span> \<span class="kw">case</span>
+    <span class="dt">SZ</span>   <span class="ot">-&gt;</span> \_ <span class="ot">-&gt;</span> <span class="dt">VNil</span>
+    <span class="dt">SS</span> n <span class="ot">-&gt;</span> \x <span class="ot">-&gt;</span> x <span class="fu">:*</span> replicateV&#39; n x</code></pre></div>
+<div class="fragment">
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">replicateV
+<span class="ot">    ::</span> <span class="dt">SingI</span> n
+    <span class="ot">=&gt;</span> a
+    <span class="ot">-&gt;</span> <span class="dt">Vec</span> n a
+replicateV <span class="fu">=</span> replicateV&#39; sing</code></pre></div>
+</div>
+</section>
+<section id="thank-you" class="slide level2">
+<h2>Thank you!</h2>
+<ul>
+<li class="fragment">Further confusion: <a href="https://blog.jle.im/entry/verified-instances-in-haskell.html" class="uri">https://blog.jle.im/entry/verified-instances-in-haskell.html</a></li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+              { src: 'reveal.js/plugin/notes/notes.js', async: true }
+        ]
+      });
+    </script>
+    </body>
+</html>
