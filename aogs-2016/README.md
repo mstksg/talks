@@ -1,8 +1,8 @@
 Asia Oceania Geosciences Society (AOGS) 2016
 ============================================
 
--   [Slides (Power Point)](http://talks.jle.im/RNN_ElNino_Drought-AOGS2016.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/RNN_ElNino_Drought-AOGS2016.pdf "Slides (PDF)")
+-   [Slides (Power Point)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Slides (Power Point)")
+-   [Slides (PDF)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pdf "Slides (PDF)")
 
 *(Annotated)*
 

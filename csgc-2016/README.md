@@ -1,8 +1,8 @@
 Chapman University Computational Sciences Graduate Conference (CSCG) 2016
 =========================================================================
 
--   [Slides (Power Point)](http://talks.jle.im/NeuralNetwork-ENSO-Precipitation.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/NeuralNetwork-ENSO-Precipitation.pdf "Slides (PDF)")
+-   [Slides (Power Point)](http://talks.jle.im/csgc-2016/NeuralNetwork-ENSO-Precipitation.pptx "Slides (Power Point)")
+-   [Slides (PDF)](http://talks.jle.im/csgc-2016/NeuralNetwork-ENSO-Precipitation.pdf "Slides (PDF)")
 
 Graduate research conference for Chapman University's Computational and
 Data Science program. Presented on the application of Recurrent Neural

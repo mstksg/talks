@@ -1,8 +1,8 @@
 LambdaConf 2016
 ===============
 
--   [Slides (Power Point)](http://talks.jle.im/FCDIP-LambdaConf16.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/FCDIP-LambdaConf16.pdf "Slides (PDF)")
+-   [Slides (Power Point)](http://talks.jle.im/lambdaconf-2016/FCDIP-LambdaConf16.pptx "Slides (Power Point)")
+-   [Slides (PDF)](http://talks.jle.im/lambdaconf-2016/FCDIP-LambdaConf16.pdf "Slides (PDF)")
 
 *(Annotated)*
 

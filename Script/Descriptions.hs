@@ -83,7 +83,6 @@ flattenDescr = cata $ \case
     bumpSection :: FilePath -> Section -> Section
     bumpSection fp s@Sec{..} = s { secLevel = secLevel + 1
       , secPath  = normalise $ fp </> secPath
-      , secLinks = map (\dl -> dl { dlPath = fp <://> dlPath dl }) secLinks
       }
 
 (<://>) :: FilePath -> FilePath -> FilePath
@@ -98,7 +97,7 @@ toBlocks :: FilePath -> Section -> [Block]
 toBlocks baseURL Sec{..} = Header secLevel nullAttr [title] : links : secBody
   where
     links = BulletList . flip map secLinks $ \DL{..} ->
-        [Plain [Link nullAttr [Str dlText] (baseURL <://> dlPath, dlText)]]
+        [Plain [Link nullAttr [Str dlText] ((baseURL </> secPath) <://> dlPath, dlText)]]
     title | secLevel == 1 = Str secTitle
           | otherwise     = Link nullAttr [Str secTitle]
                               (baseURL </> secPath, secTitle)

@@ -6,9 +6,9 @@ Functional programming conference in Boulder, CO.
 [Singletons and You](http://talks.jle.im/lambdaconf-2017/singletons "Singletons and You")
 -----------------------------------------------------------------------------------------
 
--   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/singleton-slides.html "Slides (HTML)")
--   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/singleton-slides.pdf "Slides (PDF)")
--   [Markdown Source](http://talks.jle.im/lambdaconf-2017/singleton-slides.md "Markdown Source")
+-   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.html "Slides (HTML)")
+-   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.pdf "Slides (PDF)")
+-   [Markdown Source](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.md "Markdown Source")
 
 > Let's scratch the surface of the power of Richard Eisenberg's
 > *singletons* library and peek through the doors of opportunity that it
@@ -21,9 +21,9 @@ Functional programming conference in Boulder, CO.
 [Enhancing Your Haskell With Dependently Typed Programming](http://talks.jle.im/lambdaconf-2017/dependent-types "Enhancing Your Haskell With Dependently Typed Programming")
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
--   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/dependent-types.html "Slides (HTML)")
--   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/dependent-types.pdf "Slides (PDF)")
--   [Markdown Source](http://talks.jle.im/lambdaconf-2017/dependent-types.md "Markdown Source")
+-   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.html "Slides (HTML)")
+-   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.pdf "Slides (PDF)")
+-   [Markdown Source](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.md "Markdown Source")
 -   [Code Samples](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types "Code Samples")
 
 *A Case Study With Neural Networks*
