@@ -1,6 +1,11 @@
 Enhancing Your Haskell With Dependently Typed Programming
 =========================================================
 
+-   [Slides (HTML)](http://talks.jle.im/dependent-types.html "Slides (HTML)")
+-   [Slides (PDF)](http://talks.jle.im/dependent-types.pdf "Slides (PDF)")
+-   [Markdown Source](http://talks.jle.im/dependent-types.md "Markdown Source")
+-   [Code Samples](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types "Code Samples")
+
 *A Case Study With Neural Networks*
 
 > Dependently-typed Haskell is all about pushing the limits of how much
@@ -22,6 +27,3 @@ Enhancing Your Haskell With Dependently Typed Programming
 >
 > Super-charge the correctness of your code incrementally and find new
 > ways to make the compiler work for you today!
-
-Slides and example code provided in [the
-directory](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types).

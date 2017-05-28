@@ -1,6 +1,9 @@
 LambdaConf 2016
 ===============
 
+-   [Slides (Power Point)](http://talks.jle.im/FCDIP-LambdaConf16.pptx "Slides (Power Point)")
+-   [Slides (PDF)](http://talks.jle.im/FCDIP-LambdaConf16.pdf "Slides (PDF)")
+
 *(Annotated)*
 
 Functional programming conference in Boulder, CO. Talk was on

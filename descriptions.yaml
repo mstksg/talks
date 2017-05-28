@@ -20,7 +20,13 @@ subdirs:
           >
           > Look past the hype and see how the singletons library can benefit your
           > programs today through type safety and dependently typed programming!
-        link: singleton-slides.html
+        links:
+          - text: Slides (HTML)
+            path: singleton-slides.html
+          - text: Slides (PDF)
+            path: singleton-slides.pdf
+          - text: Markdown Source
+            path: singleton-slides.md
       - dir: dependent-types
         title: Enhancing Your Haskell With Dependently Typed Programming
         description: |
@@ -44,10 +50,15 @@ subdirs:
           > Super-charge the correctness of your code incrementally and find new ways to
           > make the compiler work for you today!
 
-          Slides and example code provided in [the directory][deptype].
-
-          [deptype]: https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types
-        link: dependent-types.html
+        links:
+          - text: Slides (HTML)
+            path: dependent-types.html
+          - text: Slides (PDF)
+            path: dependent-types.pdf
+          - text: Markdown Source
+            path: dependent-types.md
+          - text: Code Samples
+            path: https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types
   - dir: aogs-2016
     title: Asia Oceania Geosciences Society (AOGS) 2016
     description: |
@@ -57,7 +68,11 @@ subdirs:
       Recurrent Neural Networks to analyze and predict the interactions between the
       El Nino Souther Oscillation and the California Drought for the winter of
       2015-2016.
-    link: RNN_ElNino_Drought-AOGS2016.pptx
+    links:
+      - text: Slides (Power Point)
+        path: RNN_ElNino_Drought-AOGS2016.pptx
+      - text: Slides (PDF)
+        path: RNN_ElNino_Drought-AOGS2016.pdf
   - dir: lambdaconf-2016
     title: LambdaConf 2016
     description: |
@@ -66,6 +81,11 @@ subdirs:
       Functional programming conference in Boulder, CO.  Talk was on applications of
       the Functor Design Pattern and Comonads/Cokleisli Composition to Digital Image
       Processing
+    links:
+      - text: Slides (Power Point)
+        path: FCDIP-LambdaConf16.pptx
+      - text: Slides (PDF)
+        path: FCDIP-LambdaConf16.pdf
     link: FCDIP-LambdaConf16.pptx
   - dir: csgc-2016
     title: Chapman University Computational Sciences Graduate Conference (CSCG) 2016
@@ -74,7 +94,11 @@ subdirs:
       Science program.  Presented on the application of Recurrent Neural Networks to
       analyze and predict the interactions between the El Nino Souther Oscillation
       and the California Drought for the winter of 2015-2016.
-    link: NeuralNetwork-ENSO-Precipitation.pptx
+    links:
+      - text: Slides (Power Point)
+        path: NeuralNetwork-ENSO-Precipitation.pptx
+      - text: Slides (PDF)
+        path: NeuralNetwork-ENSO-Precipitation.pdf
   - dir: csgc-2015
     title: Chapman University Computational Sciences Graduate Conference (CSCG) 2015
     description: |
@@ -89,3 +113,10 @@ subdirs:
 
       [poster]: https://mstksg.github.io/talks/csgc-2015/csgc-functors-comonads-dip-poster.pdf
     link: csgc-functors-comonads-dip-slides.pptx
+    links:
+      - text: Slides (Power Point)
+        path: csgc-functors-comonads-dip-slides.pptx
+      - text: Slides (PDF)
+        path: csgc-functors-comonads-dip-slides.pdf
+      - text: Poster
+        path: csgc-functors-comonads-dip-poster.pdf

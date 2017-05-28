@@ -1,6 +1,9 @@
 Asia Oceania Geosciences Society (AOGS) 2016
 ============================================
 
+-   [Slides (Power Point)](http://talks.jle.im/RNN_ElNino_Drought-AOGS2016.pptx "Slides (Power Point)")
+-   [Slides (PDF)](http://talks.jle.im/RNN_ElNino_Drought-AOGS2016.pdf "Slides (PDF)")
+
 *(Annotated)*
 
 Geosciences conference in Beijing, China. Talk discussed the application

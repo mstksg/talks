@@ -4,6 +4,7 @@
 {-# LANGUAGE TupleSections    #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ViewPatterns     #-}
+{-# OPTIONS_GHC -Wall         #-}
 
 import           Control.Monad
 import           Data.Foldable
@@ -16,6 +17,7 @@ import           Script.Descriptions
 import           Text.Pandoc
 import qualified Data.Map                   as M
 
+opts :: ShakeOptions
 opts = shakeOptions { shakeFiles     = ".shake"
                     , shakeVersion   = "1.0"
                     , shakeVerbosity = Normal
@@ -42,7 +44,7 @@ main = do
       want ["all"]
 
       "all" ~>
-        need ["beamer","reveal","readme"]
+        need ["beamer","reveal","readmes"]
 
       "beamer" ~>
         need (map (-<.> "pdf") allSrc)
@@ -50,7 +52,7 @@ main = do
       "reveal" ~>
         need (map (-<.> "html") allSrc)
 
-      "readme" ~>
+      "readmes" ~>
         need readmeFiles
 
       "//*.pdf" %> \f -> do
@@ -93,7 +95,7 @@ main = do
 
       "clean" ~> do
         removeFilesAfter ".shake" ["//*"]
-        need ["clean-renders","clean-readme"]
+        need ["clean-renders","clean-readmes"]
 
       "clean-renders" ~> do
         removeFilesAfter "."    (map (-<.> "pdf" ) allSrc)
@@ -103,7 +105,7 @@ main = do
         removeFilesAfter ".git/modules" ((++ "//") <$> revealDirs)
         removeFilesAfter "." ((++ "//") <$> revealDirs)
 
-      "clean-readme" ~> do
+      "clean-readmes" ~> do
         removeFilesAfter "."    readmeFiles
 
 

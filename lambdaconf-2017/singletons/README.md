@@ -1,6 +1,10 @@
 Singletons and You
 ==================
 
+-   [Slides (HTML)](http://talks.jle.im/singleton-slides.html "Slides (HTML)")
+-   [Slides (PDF)](http://talks.jle.im/singleton-slides.pdf "Slides (PDF)")
+-   [Markdown Source](http://talks.jle.im/singleton-slides.md "Markdown Source")
+
 > Let's scratch the surface of the power of Richard Eisenberg's
 > *singletons* library and peek through the doors of opportunity that it
 > opens for us. Learn things you can directly apply now, and also build
