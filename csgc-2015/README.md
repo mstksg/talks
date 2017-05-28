@@ -1,5 +1,5 @@
-[Chapman University Computational Sciences Graduate Conference (CSCG) 2015](https://mstksg.github.io/talks/csgc-2015/csgc-functors-comonads-dip-slides.pptx "Chapman University Computational Sciences Graduate Conference (CSCG) 2015")
-========================================================================================================================================================================================================================================
+Chapman University Computational Sciences Graduate Conference (CSCG) 2015
+=========================================================================
 
 *(Annotated)*
 

@@ -1,5 +1,5 @@
-[Chapman University Computational Sciences Graduate Conference (CSCG) 2016](https://mstksg.github.io/talks/csgc-2016/NeuralNetwork-ENSO-Precipitation.pptx "Chapman University Computational Sciences Graduate Conference (CSCG) 2016")
-=======================================================================================================================================================================================================================================
+Chapman University Computational Sciences Graduate Conference (CSCG) 2016
+=========================================================================
 
 Graduate research conference for Chapman University's Computational and
 Data Science program. Presented on the application of Recurrent Neural

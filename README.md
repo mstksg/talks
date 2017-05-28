@@ -1,5 +1,5 @@
-[Talks](https://mstksg.github.io/talks/. "Talks")
-=================================================
+Talks
+=====
 
 Collection of slides, notes, and posters for public talks I've given,
 annotated when possible.

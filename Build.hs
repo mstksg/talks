@@ -37,7 +37,6 @@ main = do
     readmes <- M.fromList . maybe [] (descrPandocs pagesBase)
                 <$> decodeFile "descriptions.yaml"
     let readmeFiles = map (normalise . (</> "README.md")) $ M.keys readmes
-    print readmeFiles
     allSrc  <- filter validSrc <$> getDirectoryFilesIO "" ["//*.md"]
     shakeArgs opts $ do
       want ["all"]

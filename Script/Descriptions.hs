@@ -75,9 +75,11 @@ flattenDescr = cata $ \case
           }
 
 toBlocks :: FilePath -> Section -> [Block]
-toBlocks baseURL Sec{..} = Header secLevel nullAttr [link] : secBody
+toBlocks baseURL Sec{..} = Header secLevel nullAttr [title] : secBody
   where
-    link = Link nullAttr [Str secTitle] (baseURL </> secPath, secTitle)
+    title | secLevel == 1 = Str secTitle
+          | otherwise     = Link nullAttr [Str secTitle]
+                              (baseURL </> secPath, secTitle)
 
 descrPandoc :: FilePath -> Descr -> Pandoc
 descrPandoc baseURL =

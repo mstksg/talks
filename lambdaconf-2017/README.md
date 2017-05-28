@@ -1,5 +1,5 @@
-[LambdaConf 2017](https://mstksg.github.io/talks/lambdaconf-2017 "LambdaConf 2017")
-===================================================================================
+LambdaConf 2017
+===============
 
 Functional programming conference in Boulder, CO.
 

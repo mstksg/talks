@@ -1,5 +1,5 @@
-[Singletons and You](https://mstksg.github.io/talks/singletons/singleton-slides.html "Singletons and You")
-==========================================================================================================
+Singletons and You
+==================
 
 > Let's scratch the surface of the power of Richard Eisenberg's
 > *singletons* library and peek through the doors of opportunity that it
