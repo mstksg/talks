@@ -3,8 +3,8 @@ LambdaConf 2017
 
 Functional programming conference in Boulder, CO.
 
-[Singletons and You](https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html "Singletons and You")
---------------------------------------------------------------------------------------------------------------------------
+[Singletons and You](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.html "Singletons and You")
+---------------------------------------------------------------------------------------------------------------
 
 > Let's scratch the surface of the power of Richard Eisenberg's
 > *singletons* library and peek through the doors of opportunity that it
@@ -14,8 +14,8 @@ Functional programming conference in Boulder, CO.
 > Look past the hype and see how the singletons library can benefit your
 > programs today through type safety and dependently typed programming!
 
-[Enhancing Your Haskell With Dependently Typed Programming](https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html "Enhancing Your Haskell With Dependently Typed Programming")
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[Enhancing Your Haskell With Dependently Typed Programming](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.html "Enhancing Your Haskell With Dependently Typed Programming")
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 *A Case Study With Neural Networks*
 

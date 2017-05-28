@@ -30,7 +30,7 @@ validSrc src = not ("README"    `isInfixOf` src)
             && not ("reveal.js" `isInfixOf` src)
 
 pagesBase :: FilePath
-pagesBase = "https://mstksg.github.io/talks"
+pagesBase = "http://talks.jle.im"
 
 main :: IO ()
 main = do
