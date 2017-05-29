@@ -26,7 +26,7 @@ subdirs:
           - text: Slides (PDF)
             path: singleton-slides.pdf
           - text: Markdown Source
-            path: singleton-slides.md
+            path: https://github.com/mstksg/talks/tree/master/lambdaconf-2017/singletons/singleton-slides.md
       - dir: dependent-types
         title: Enhancing Your Haskell With Dependently Typed Programming
         description: |
@@ -56,7 +56,7 @@ subdirs:
           - text: Slides (PDF)
             path: dependent-types.pdf
           - text: Markdown Source
-            path: dependent-types.md
+            path: https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types/dependent-types.md
           - text: Code Samples
             path: https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types
   - dir: aogs-2016
