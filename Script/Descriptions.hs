@@ -10,6 +10,7 @@
 module Script.Descriptions (descrPandocs, Descr) where
 
 import           Control.Applicative
+import           Control.Monad
 import           Data.Aeson
 import           Data.Aeson.Types
 import           Data.Bifunctor
@@ -106,7 +107,7 @@ toBlocks baseURL upLink Sec{..} =
            ]
   where
     upLinkBlock = do
-      -- guard (secLevel == 1)
+      guard (secLevel == 1)
       DL{..} <- upLink
       return $ Para [Emph [Link nullAttr [Str "(up)"] (baseURL </> dlPath, dlText)]]
     links = BulletList . flip map secLinks $ \DL{..} ->

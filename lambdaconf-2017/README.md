@@ -8,8 +8,6 @@ Functional programming conference in Boulder, CO.
 [Singletons and You](http://talks.jle.im/lambdaconf-2017/singletons "Singletons and You")
 -----------------------------------------------------------------------------------------
 
-*[(up)](http://talks.jle.im/. "Talks")*
-
 -   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.html "Slides (HTML)")
 -   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.pdf "Slides (PDF)")
 -   [Markdown Source](http://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.md "Markdown Source")
@@ -24,8 +22,6 @@ Functional programming conference in Boulder, CO.
 
 [Enhancing Your Haskell With Dependently Typed Programming](http://talks.jle.im/lambdaconf-2017/dependent-types "Enhancing Your Haskell With Dependently Typed Programming")
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-*[(up)](http://talks.jle.im/. "Talks")*
 
 -   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.html "Slides (HTML)")
 -   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.pdf "Slides (PDF)")
