@@ -102,10 +102,6 @@ subdirs:
       Science program.  Presented on applications of functors and comonads in
       mathematical analysis and algorithm implementation in digital image
       processing.
-
-      [Poster also available][poster].
-
-      [poster]: https://mstksg.github.io/talks/csgc-2015/csgc-functors-comonads-dip-poster.pdf
     link: csgc-functors-comonads-dip-slides.pptx
     links:
       - text: Annotated Slides (Power Point)
