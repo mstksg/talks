@@ -1,6 +1,8 @@
 Chapman University Computational Sciences Graduate Conference (CSCG) 2016
 =========================================================================
 
+*[(up)](http://talks.jle.im/. "Talks")*
+
 -   [Slides (Power Point)](http://talks.jle.im/csgc-2016/NeuralNetwork-ENSO-Precipitation.pptx "Slides (Power Point)")
 -   [Slides (PDF)](http://talks.jle.im/csgc-2016/NeuralNetwork-ENSO-Precipitation.pdf "Slides (PDF)")
 

@@ -15,6 +15,7 @@ import           Data.Aeson.Types
 import           Data.Bifunctor
 import           Data.Functor.Foldable
 import           Data.List
+import           Data.Maybe
 import           GHC.Generics
 import           System.FilePath
 import           Text.Pandoc
@@ -81,8 +82,12 @@ flattenDescr = cata $ \case
         Right (Pandoc _ bs) -> bs
         Left e              -> [Para [Str (show e)]]
     bumpSection :: FilePath -> Section -> Section
-    bumpSection fp s@Sec{..} = s { secLevel = secLevel + 1
+    bumpSection fp s@Sec{..} = s
+      { secLevel = secLevel + 1
       , secPath  = normalise $ fp </> secPath
+      -- , secUp    = Just $ case secUp of
+      --     Nothing -> DL secTitle fp
+      --     Just dl -> dl { dlPath = normalise (fp </> dlPath dl) }
       }
 
 (<://>) :: FilePath -> FilePath -> FilePath
@@ -93,23 +98,31 @@ dir <://> fp | isHttp    = fp
           || ("https://" `isPrefixOf` fp)
 
 
-toBlocks :: FilePath -> Section -> [Block]
-toBlocks baseURL Sec{..} = Header secLevel nullAttr [title] : links : secBody
+toBlocks :: FilePath -> Maybe DescrLink -> Section -> [Block]
+toBlocks baseURL upLink Sec{..} =
+    concat [ [Header secLevel nullAttr [title]]
+           , maybeToList upLinkBlock
+           , links : secBody
+           ]
   where
+    upLinkBlock = do
+      -- guard (secLevel == 1)
+      DL{..} <- upLink
+      return $ Para [Emph [Link nullAttr [Str "(up)"] (baseURL </> dlPath, dlText)]]
     links = BulletList . flip map secLinks $ \DL{..} ->
         [Plain [Link nullAttr [Str dlText] ((baseURL </> secPath) <://> dlPath, dlText)]]
     title | secLevel == 1 = Str secTitle
           | otherwise     = Link nullAttr [Str secTitle]
                               (baseURL </> secPath, secTitle)
 
-descrPandoc :: FilePath -> Descr -> Pandoc
-descrPandoc baseURL =
-    Pandoc mempty . concatMap (toBlocks baseURL) . flattenDescr
+descrPandoc :: FilePath -> Maybe DescrLink -> Descr -> Pandoc
+descrPandoc baseURL upLink =
+    Pandoc mempty . concatMap (toBlocks baseURL upLink) . flattenDescr
 
 descrPandocs :: FilePath -> Descr -> [(FilePath, Pandoc)]
-descrPandocs baseURL = (map . second) (descrPandoc baseURL) . unfoldDescr
+descrPandocs baseURL = (map . second) (uncurry (descrPandoc baseURL)) . unfoldDescr
 
-unfoldDescr :: Descr -> [(FilePath, Descr)]
+unfoldDescr :: Descr -> [(FilePath, (Maybe DescrLink, Descr))]
 unfoldDescr = para $ \case
     d@Descr{..} ->
       let newDescr  = d { descrNode = case descrNode of
@@ -119,7 +132,24 @@ unfoldDescr = para $ \case
           oldDescrs = case descrNode of
             DescrFiles _  -> []
             DescrDir   ds ->
-              concatMap ((map . first) (normalise . (descrPath </>)) . snd)
-                ds
-      in  (descrPath, Fix newDescr) : oldDescrs
-
+              concatMap (map (uncurry (bumpSub descrTitle descrPath)) . snd) ds
+              -- concatMap ((map . first) (normalise . (descrPath </>)) . snd)
+              --   ds
+      in  (descrPath, (Nothing, Fix newDescr)) : oldDescrs
+  where
+    bumpSub
+        :: String
+        -> FilePath
+        -> FilePath
+        -> (Maybe DescrLink, Descr)
+        -> (FilePath, (Maybe DescrLink, Descr))
+    bumpSub addTitle addPath oldPath (upLink, d) =
+        (normalise (addPath </> oldPath), (upLink', d))
+      where
+        upLink' = Just $ case upLink of
+          Just dl -> dl { dlPath = normalise (addPath </> dlPath dl) }
+          Nothing -> DL addTitle addPath
+                           -- Just u  -> normalise (addPath </> u)
+                           -- Nothing -> addPath
+      --     Nothing -> DL secTitle fp
+      --     Just dl -> dl { dlPath = normalise (fp </> dlPath dl) }
