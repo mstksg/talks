@@ -3,9 +3,9 @@ Enhancing Your Haskell With Dependently Typed Programming
 
 *[(up)](http://talks.jle.im/lambdaconf-2017 "LambdaConf 2017")*
 
--   [Slides (HTML)](http://talks.jle.im/dependent-types/dependent-types.html "Slides (HTML)")
--   [Slides (PDF)](http://talks.jle.im/dependent-types/dependent-types.pdf "Slides (PDF)")
--   [Markdown Source](http://talks.jle.im/dependent-types/dependent-types.md "Markdown Source")
+-   [Slides (HTML)](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.html "Slides (HTML)")
+-   [Slides (PDF)](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.pdf "Slides (PDF)")
+-   [Markdown Source](http://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.md "Markdown Source")
 -   [Code Samples](https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types "Code Samples")
 
 *A Case Study With Neural Networks*

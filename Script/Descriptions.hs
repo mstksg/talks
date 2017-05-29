@@ -86,9 +86,6 @@ flattenDescr = cata $ \case
     bumpSection fp s@Sec{..} = s
       { secLevel = secLevel + 1
       , secPath  = normalise $ fp </> secPath
-      -- , secUp    = Just $ case secUp of
-      --     Nothing -> DL secTitle fp
-      --     Just dl -> dl { dlPath = normalise (fp </> dlPath dl) }
       }
 
 (<://>) :: FilePath -> FilePath -> FilePath
@@ -133,24 +130,18 @@ unfoldDescr = para $ \case
           oldDescrs = case descrNode of
             DescrFiles _  -> []
             DescrDir   ds ->
-              concatMap (map (uncurry (bumpSub descrTitle descrPath)) . snd) ds
-              -- concatMap ((map . first) (normalise . (descrPath </>)) . snd)
-              --   ds
+              concatMap (map (bumpSub descrTitle descrPath) . snd) ds
       in  (descrPath, (Nothing, Fix newDescr)) : oldDescrs
   where
     bumpSub
         :: String
         -> FilePath
-        -> FilePath
-        -> (Maybe DescrLink, Descr)
         -> (FilePath, (Maybe DescrLink, Descr))
-    bumpSub addTitle addPath oldPath (upLink, d) =
-        (normalise (addPath </> oldPath), (upLink', d))
+        -> (FilePath, (Maybe DescrLink, Descr))
+    bumpSub addTitle addPath (oldPath, (upLink, Fix d)) = (newPath, (upLink', Fix d'))
       where
+        d' = d { descrPath = normalise $ addPath </> descrPath d }
+        newPath = normalise $ addPath </> oldPath
         upLink' = Just $ case upLink of
           Just dl -> dl { dlPath = normalise (addPath </> dlPath dl) }
           Nothing -> DL addTitle addPath
-                           -- Just u  -> normalise (addPath </> u)
-                           -- Nothing -> addPath
-      --     Nothing -> DL secTitle fp
-      --     Just dl -> dl { dlPath = normalise (fp </> dlPath dl) }
