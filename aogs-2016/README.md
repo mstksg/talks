@@ -3,10 +3,8 @@ Asia Oceania Geosciences Society (AOGS) 2016
 
 *[(up)](http://talks.jle.im/. "Talks")*
 
--   [Slides (Power Point)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pdf "Slides (PDF)")
-
-*(Annotated)*
+-   [Annotated Slides (Power Point)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Annotated Slides (Power Point)")
+-   [Annotated Slides (PDF)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pdf "Annotated Slides (PDF)")
 
 Geosciences conference in Beijing, China. Talk discussed the application
 of Recurrent Neural Networks to analyze and predict the interactions

@@ -55,10 +55,8 @@ Functional programming conference in Boulder, CO.
 [Asia Oceania Geosciences Society (AOGS) 2016](http://talks.jle.im/aogs-2016 "Asia Oceania Geosciences Society (AOGS) 2016")
 ----------------------------------------------------------------------------------------------------------------------------
 
--   [Slides (Power Point)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pdf "Slides (PDF)")
-
-*(Annotated)*
+-   [Annotated Slides (Power Point)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pptx "Annotated Slides (Power Point)")
+-   [Annotated Slides (PDF)](http://talks.jle.im/aogs-2016/RNN_ElNino_Drought-AOGS2016.pdf "Annotated Slides (PDF)")
 
 Geosciences conference in Beijing, China. Talk discussed the application
 of Recurrent Neural Networks to analyze and predict the interactions
@@ -68,10 +66,8 @@ the winter of 2015-2016.
 [LambdaConf 2016](http://talks.jle.im/lambdaconf-2016 "LambdaConf 2016")
 ------------------------------------------------------------------------
 
--   [Slides (Power Point)](http://talks.jle.im/lambdaconf-2016/FCDIP-LambdaConf16.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/lambdaconf-2016/FCDIP-LambdaConf16.pdf "Slides (PDF)")
-
-*(Annotated)*
+-   [Annotated Slides (Power Point)](http://talks.jle.im/lambdaconf-2016/FCDIP-LambdaConf16.pptx "Annotated Slides (Power Point)")
+-   [Annotated Slides (PDF)](http://talks.jle.im/lambdaconf-2016/FCDIP-LambdaConf16.pdf "Annotated Slides (PDF)")
 
 Functional programming conference in Boulder, CO. Talk was on
 applications of the Functor Design Pattern and Comonads/Cokleisli
@@ -92,11 +88,9 @@ Souther Oscillation and the California Drought for the winter of
 [Chapman University Computational Sciences Graduate Conference (CSCG) 2015](http://talks.jle.im/csgc-2015 "Chapman University Computational Sciences Graduate Conference (CSCG) 2015")
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
--   [Slides (Power Point)](http://talks.jle.im/csgc-2015/csgc-functors-comonads-dip-slides.pptx "Slides (Power Point)")
--   [Slides (PDF)](http://talks.jle.im/csgc-2015/csgc-functors-comonads-dip-slides.pdf "Slides (PDF)")
+-   [Annotated Slides (Power Point)](http://talks.jle.im/csgc-2015/csgc-functors-comonads-dip-slides.pptx "Annotated Slides (Power Point)")
+-   [Annotated Slides (PDF)](http://talks.jle.im/csgc-2015/csgc-functors-comonads-dip-slides.pdf "Annotated Slides (PDF)")
 -   [Poster](http://talks.jle.im/csgc-2015/csgc-functors-comonads-dip-poster.pdf "Poster")
-
-*(Annotated)*
 
 Graduate research conference for Chapman University's Computational and
 Data Science program. Presented on applications of functors and comonads
