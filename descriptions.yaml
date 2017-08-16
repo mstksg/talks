@@ -6,7 +6,7 @@ description: |
   when possible.
 subdirs:
   - dir: kievfprog
-    title: Enhancing Your Haskell With Dependently Typed Programming (at Kiev Functional programming)
+    title: Dependently Typed Programming Introduction (at Kiev Functional programming)
     description: |
       Talk given at Kievfprog, August 16th 2017, on seeing how dependent types
       can help you in your everyday practical code!  Based on my [LambdaConf

@@ -1,5 +1,5 @@
-Enhancing Your Haskell With Dependently Typed Programming (at Kiev Functional programming)
-==========================================================================================
+Dependently Typed Programming Introduction (at Kiev Functional programming)
+===========================================================================
 
 *[(up)](http://talks.jle.im/. "Talks")*
 
