@@ -4,6 +4,18 @@ Talks
 Collection of slides, notes, and posters for public talks I've given,
 annotated when possible.
 
+[Enhancing Your Haskell With Dependently Typed Programming (at Kiev Functional programming)](http://talks.jle.im/kievfprog "Enhancing Your Haskell With Dependently Typed Programming (at Kiev Functional programming)")
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+-   [Slides (HTML)](http://talks.jle.im/kievfprog/dependent-types.html "Slides (HTML)")
+-   [Slides (PDF)](http://talks.jle.im/kievfprog/dependent-types.pdf "Slides (PDF)")
+-   [Markdown Source](https://github.com/mstksg/talks/tree/master/kievfprog/dependent-types.md "Markdown Source")
+-   [Code Samples](https://github.com/mstksg/talks/tree/master/kievfprog "Code Samples")
+
+Talk given at Kievfprog, August 16th 2017, on seeing how dependent types
+can help you in your everyday practical code! Based on my \[LambdaConf
+2017\]\[\] talk.
+
 [LambdaConf 2017](http://talks.jle.im/lambdaconf-2017 "LambdaConf 2017")
 ------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --install-ghc runghc --package shake --package pandoc --package aeson --package yaml
+-- stack --install-ghc runghc --package shake --package pandoc --package aeson --package yaml --package recursion-schemes
 
 {-# LANGUAGE TupleSections    #-}
 {-# LANGUAGE TypeApplications #-}

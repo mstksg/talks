@@ -67,13 +67,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <section>
   <h1 class="title">Practical Dependent Types: Type-Safe Neural Networks</h1>
   <p class="author">Justin Le https://blog.jle.im (justin@jle.im)</p>
-  <p class="date">Lambdaconf 2017, May 27, 2017</p>
+  <p class="date">Kiev Functional Programming, Aug 16, 2017</p>
 </section>
 
 <section id="preface" class="slide level2">
 <h2>Preface</h2>
-<p>Slide available at <a href="https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html" class="uri">https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html</a>.</p>
-<p>All code available at <a href="https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types" class="uri">https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types</a>.</p>
+<p>Slide available at <a href="https://mstksg.github.io/talks/kievfprog/dependent-types.html" class="uri">https://mstksg.github.io/talks/kievfprog/dependent-types.html</a>.</p>
+<p>All code available at <a href="https://github.com/mstksg/talks/tree/master/kievfprog" class="uri">https://github.com/mstksg/talks/tree/master/kievfprog</a>.</p>
 <p>Libraries required: (available on Hackage) <em>hmatrix</em>, <em>singletons</em>, <em>MonadRandom</em>. GHC 8.x assumed.</p>
 </section>
 <section id="the-big-question" class="slide level2">
@@ -253,8 +253,8 @@ ghci<span class="fu">&gt;</span> <span class="fu">:</span>k <span class="ch">&#3
 <section id="a-typed-alternative-2" class="slide level2">
 <h2>A Typed Alternative</h2>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Network</span><span class="ot"> ::</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> [<span class="dt">Nat</span>] <span class="ot">-&gt;</span> <span class="dt">Nat</span> <span class="ot">-&gt;</span> <span class="dt">Type</span> <span class="kw">where</span>
-    <span class="dt">O</span><span class="ot">     ::</span> <span class="fu">!</span>(<span class="dt">Weights</span> i o)
-          <span class="ot">-&gt;</span> <span class="dt">Network</span> i <span class="ch">&#39;[] o</span>
+    <span class="dt">O</span><span class="ot">    ::</span> <span class="fu">!</span>(<span class="dt">Weights</span> i o)
+         <span class="ot">-&gt;</span> <span class="dt">Network</span> i <span class="ch">&#39;[] o</span>
 <span class="ot">    (:~) ::</span> <span class="dt">KnownNat</span> h
          <span class="ot">=&gt;</span> <span class="fu">!</span>(<span class="dt">Weights</span> i h)
          <span class="ot">-&gt;</span> <span class="fu">!</span>(<span class="dt">Network</span> h hs o)
@@ -291,6 +291,11 @@ runNet (w <span class="fu">:~</span> n&#39;) <span class="fu">!</span>v <span cl
 <section id="running-1" class="slide level2">
 <h2>Running</h2>
 <p>Much better! Matrices and vector lengths are guaranteed to line up!</p>
+<p>Also, note that the interface for <code>runNet</code> is better stated in its type. No need to reply on documentation.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">runNet
+<span class="ot">    ::</span> (<span class="dt">KnownNat</span> i, <span class="dt">KnownNat</span> o)
+    <span class="ot">=&gt;</span> <span class="dt">Network</span> i hs o <span class="ot">-&gt;</span> <span class="dt">R</span> i <span class="ot">-&gt;</span> <span class="dt">R</span> o</code></pre></div>
+<p>The user knows that they have to pass in an <code>R i</code>, and knows to expect an <code>R o</code>.</p>
 </section>
 <section id="generating" class="slide level2">
 <h2>Generating</h2>
@@ -352,10 +357,16 @@ randomNet&#39; <span class="fu">=</span> \<span class="kw">case</span>
 <span class="ot">    sing ::</span> <span class="dt">Sing</span> x</code></pre></div>
 <p>We can now recover the expressivity of the original function, and gain demand-driven shapes.</p>
 </div>
-<div class="fragment">
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">randomNet ::</span> forall m i hs o<span class="fu">.</span> (<span class="dt">MonadRandom</span> m, <span class="dt">KnownNat</span> i, <span class="dt">SingI</span> hs, <span class="dt">KnownNat</span> o)
+</section>
+<section id="implicit-passing-1" class="slide level2">
+<h2>Implicit passing</h2>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">randomNet ::</span> forall i hs o m<span class="fu">.</span> (<span class="dt">MonadRandom</span> m, <span class="dt">KnownNat</span> i, <span class="dt">SingI</span> hs, <span class="dt">KnownNat</span> o)
           <span class="ot">=&gt;</span> m (<span class="dt">Network</span> i hs o)
 randomNet <span class="fu">=</span> randomNet&#39; sing</code></pre></div>
+<p>Now the shape can be inferred from the functions that use the <code>Network</code>.</p>
+<div class="fragment">
+<p>We can also demand them explicitly:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">randomNet <span class="fu">@</span><span class="dv">1</span> <span class="fu">@</span><span class="ch">&#39;[8,5] @2</span></code></pre></div>
 </div>
 </section>
 <section id="backprop-1" class="slide level2">
@@ -424,11 +435,28 @@ train rate x0 target <span class="fu">=</span> fst <span class="fu">.</span> go 
               <span class="co">-- bundle of derivatives for next step</span>
               dWs  <span class="fu">=</span> tr wN <span class="fu">#&gt;</span> dEdy
           <span class="kw">in</span>  (w&#39; <span class="fu">:~</span> n&#39;, dWs)</code></pre></div>
-<p>Surprise! It's actually identical! No loss in expressivity. Typed holes can write our code for us in many cases. And shapes are all verified.</p>
+<p>Surprise! It's actually <em>identical</em>! No loss in expressivity.</p>
+<p>Also, typed holes can help you write your code in a lot of places. And shapes are all verified.</p>
+<div class="fragment">
+<p>By the way, still waiting for linear types in GHC :)</p>
+</div>
 </section>
 <section id="type-driven-development" class="slide level2">
 <h2>Type-Driven Development</h2>
-<p>We wrote an untyped implementation, then realized what was wrong. Then we added types, and everything is great!</p>
+<p>The overall guiding principle is:</p>
+<ol type="1">
+<li>Write an untyped implementation.</li>
+<li>Realize where things can go wrong:
+<ul>
+<li>Partial functions?</li>
+<li>Many, many ways to implement a function incorrectly with the current types?</li>
+<li>Unclear or documentation-reliant API?</li>
+</ul></li>
+<li>Gradually add types in selective places to handle these.</li>
+</ol>
+<div class="fragment">
+<p>I recommend not going the other way (use perfect type safety before figuring out where you actually really need them). We call that &quot;hasochism&quot;.</p>
+</div>
 </section>
 <section id="further-reading" class="slide level2">
 <h2>Further reading</h2>

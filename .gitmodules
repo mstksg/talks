@@ -4,3 +4,6 @@
 [submodule "lambdaconf-2017/dependent-types/reveal.js"]
 	path = lambdaconf-2017/dependent-types/reveal.js
 	url = https://github.com/hakimel/reveal.js/
+[submodule "kievfprog/reveal.js"]
+	path = kievfprog/reveal.js
+	url = https://github.com/hakimel/reveal.js/
