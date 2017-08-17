@@ -12,7 +12,7 @@ subdirs:
       can help you in your everyday practical code!  Based on my [LambdaConf
       2017][] talk.
 
-      [LambdaConf 2016]: http://talks.jle.im/lambdaconf-2017/dependent-types
+      [LambdaConf 2017]: http://talks.jle.im/lambdaconf-2017/dependent-types
     links:
       - text: Slides (HTML)
         path: dependent-types.html
