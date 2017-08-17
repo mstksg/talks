@@ -13,8 +13,8 @@ annotated when possible.
 -   [Code Samples](https://github.com/mstksg/talks/tree/master/kievfprog "Code Samples")
 
 Talk given at Kievfprog, August 16th 2017, on seeing how dependent types
-can help you in your everyday practical code! Based on my \[LambdaConf
-2017\]\[\] talk.
+can help you in your everyday practical code! Based on my [LambdaConf
+2017](http://talks.jle.im/lambdaconf-2017/dependent-types) talk.
 
 [LambdaConf 2017](http://talks.jle.im/lambdaconf-2017 "LambdaConf 2017")
 ------------------------------------------------------------------------
