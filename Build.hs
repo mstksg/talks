@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --install-ghc runghc --package shake --package pandoc --package aeson --package yaml --package recursion-schemes --resolver lts-8
+-- stack --install-ghc runghc --package shake --package pandoc --package aeson --package yaml --package recursion-schemes --resolver nightly-2019-06-21
 
 {-# LANGUAGE TupleSections    #-}
 {-# LANGUAGE TypeApplications #-}
@@ -16,6 +16,7 @@ import           Development.Shake.FilePath
 import           Script.Descriptions
 import           Text.Pandoc
 import qualified Data.Map                   as M
+import qualified Data.Text as T
 
 opts :: ShakeOptions
 opts = shakeOptions { shakeFiles     = ".shake"
@@ -36,8 +37,8 @@ pagesBase = "http://talks.jle.im"
 
 main :: IO ()
 main = do
-    readmes <- M.fromList . maybe [] (descrPandocs pagesBase)
-                <$> decodeFile "descriptions.yaml"
+    readmes <- M.fromList . either (const []) (descrPandocs pagesBase)
+                <$> decodeFileEither "descriptions.yaml"
     let readmeFiles = map (normalise . (</> "README.md")) $ M.keys readmes
     allSrc  <- filter validSrc <$> getDirectoryFilesIO "" ["//*.md"]
     shakeArgs opts $ do
@@ -90,7 +91,10 @@ main = do
         liftIO $ putStrLn f
         need ["descriptions.yaml"]
         case M.lookup (takeDirectory f) readmes of
-          Just pd -> writeFile' f (writeMarkdown def pd)
+          Just pd -> (writeFile' f . T.unpack =<<)
+                   . liftIO
+                   . runIOorExplode
+                   $ writeMarkdown def pd
           Nothing -> error $ f ++ " not found in descriptions.yaml"
 
       "clean" ~> do

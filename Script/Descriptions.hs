@@ -12,7 +12,6 @@ module Script.Descriptions (descrPandocs, Descr) where
 import           Control.Applicative
 import           Control.Monad
 import           Data.Aeson
-import           Data.Aeson.Types
 import           Data.Bifunctor
 import           Data.Functor.Foldable
 import           Data.List
@@ -20,6 +19,7 @@ import           Data.Maybe
 import           GHC.Generics
 import           System.FilePath
 import           Text.Pandoc
+import qualified Data.Text             as T
 
 data DescrT d = Descr { descrPath  :: FilePath
                       , descrTitle :: String
@@ -79,7 +79,7 @@ flattenDescr = cata $ \case
       in  newSec : oldSecs
   where
     parseDescr :: String -> [Block]
-    parseDescr d = case readMarkdown def d of
+    parseDescr d = case runPure (readMarkdown def (T.pack d)) of
         Right (Pandoc _ bs) -> bs
         Left e              -> [Para [Str (show e)]]
     bumpSection :: FilePath -> Section -> Section
