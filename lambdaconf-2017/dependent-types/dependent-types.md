@@ -1,6 +1,9 @@
-% Practical Dependent Types: Type-Safe Neural Networks
-% Justin Le https://blog.jle.im (justin@jle.im)
-% Lambdaconf 2017, May 27, 2017
+---
+title: "Practical Dependent Types: Type-Safe Neural Networks"
+author: Justin Le https://blog.jle.im (justin@jle.im)
+date: Lambdaconf 2017, May 27, 2017
+theme: beige
+...
 
 ## Preface
 

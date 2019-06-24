@@ -1,6 +1,9 @@
-% Practical Dependent Types: Type-Safe Neural Networks
-% Justin Le https://blog.jle.im (justin@jle.im)
-% Kiev Functional Programming, Aug 16, 2017
+---
+title: "Practical Dependent Types: Type-Safe Neural Networks"
+author: Justin Le https://blog.jle.im (justin@jle.im)
+date: Kiev Functional Programming, Aug 16, 2017
+theme: beige
+...
 
 ## Preface
 

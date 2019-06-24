@@ -1,8 +1,8 @@
 ---
 title: Applicative Regular Expressions w/ the Free Alternative
+author: Justin Le (@mstk)
+date: C◦mp◦se Conference 2019, June 24
 theme: sky
-author: Justin Le <https://blog.jle.im>
-date: C◦mp◦se 2019, June 24
 ...
 
 ## Preface

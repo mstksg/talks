@@ -1,6 +1,9 @@
-% Singletons and You
-% Justin Le https://blog.jle.im (justin@jle.im)
-% Lambdaconf 2017, May 27, 2017
+---
+title: Singletons and You
+author: Justin Le https://blog.jle.im (justin@jle.im)
+date: Lambdaconf 2017, May 27, 2017
+theme: beige
+...
 
 ## Preface
 
