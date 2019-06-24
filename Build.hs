@@ -64,6 +64,7 @@ main = do
         cmd (Cwd sd)
             "pandoc" "-t beamer"
                      "-o " (takeFileName f)
+                     "-V theme=default"
                      "--standalone"
                      sf
                      (unwords ((updirs </>) <$> confs))
@@ -84,7 +85,8 @@ main = do
       "//*/reveal.js/.git" %> \f -> do
         liftIO $ removeFiles "." [takeDirectory f]
         cmd "git" "submodule add"
-                  "https://github.com/hakimel/reveal.js/"
+                  "-b talks"
+                  "https://github.com/mstksg/reveal.js"
                   (takeDirectory f)
 
       ["//README.md", "README.md"] |%> \f -> do

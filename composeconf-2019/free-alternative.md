@@ -1,6 +1,9 @@
-% Applicative Regular Expressions w/ the Free Alternative
-% Justin Le (https://blog.jle.im)
-% C◦mp◦se 2019, June 24
+---
+title: Applicative Regular Expressions w/ the Free Alternative
+theme: sky
+author: Justin Le <https://blog.jle.im>
+date: C◦mp◦se 2019, June 24
+...
 
 ## Preface
 

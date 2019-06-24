@@ -1,12 +1,16 @@
 [submodule "lambdaconf-2017/singletons/reveal.js"]
 	path = lambdaconf-2017/singletons/reveal.js
-	url = https://github.com/hakimel/reveal.js/
+	url = https://github.com/mstksg/reveal.js
+	branch = talks
 [submodule "lambdaconf-2017/dependent-types/reveal.js"]
 	path = lambdaconf-2017/dependent-types/reveal.js
-	url = https://github.com/hakimel/reveal.js/
+	url = https://github.com/mstksg/reveal.js
+	branch = talks
 [submodule "kievfprog/reveal.js"]
 	path = kievfprog/reveal.js
-	url = https://github.com/hakimel/reveal.js/
+	url = https://github.com/mstksg/reveal.js
+	branch = talks
 [submodule "composeconf-2019/reveal.js"]
 	path = composeconf-2019/reveal.js
-	url = https://github.com/hakimel/reveal.js/
+	url = https://github.com/mstksg/reveal.js
+	branch = talks
