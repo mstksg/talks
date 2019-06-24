@@ -315,12 +315,14 @@ digit = asum [ intToDigit i <$ char i | i <- [0..9] ]
 
 ## Parsing
 
-Options:
+### Options
 
 ::: incremental
 
 1.  *Interpret* into an `Alternative` instance, "offloading" the logic
+    *   Analogy: Process a list using `foldMap`
 2.  Direct pattern match on structure constructors (Haskell 101)
+    *   Analogy: Process a list using pattern matching and recursion
 :::
 
 ## What is freeness?
