@@ -92,6 +92,8 @@ Doesn't match:
 
 ## Applicative Regular Expressions
 
+. . .
+
 "Type-indexed" regular expressions.
 
 ```haskell
@@ -240,6 +242,8 @@ class Applicative f => Alternative f where
 ::::::{.column width="45%"}
 
 ::: incremental
+
+**Components of a Regular Language**
 
 1.  Empty language: `empty`
 2.  Empty string: `pure x`

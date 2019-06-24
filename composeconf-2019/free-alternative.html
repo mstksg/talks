@@ -168,9 +168,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="applicative-regular-expressions" class="slide level2">
 <h2>Applicative Regular Expressions</h2>
+<div class="fragment">
 <p>“Type-indexed” regular expressions.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">type</span> <span class="dt">Regexp</span> a</span>
 <span id="cb3-2"><a href="#cb3-2"></a>         <span class="co">-- ^ type of &quot;result&quot;</span></span></code></pre></div>
+</div>
 <div class="fragment">
 <div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="ot">char   ::</span> <span class="dt">Char</span>   <span class="ot">-&gt;</span> <span class="dt">RegExp</span> <span class="dt">Char</span></span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="ot">string ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">RegExp</span> <span class="dt">String</span></span></code></pre></div>
@@ -282,6 +284,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb13-13"><a href="#cb13-13"></a><span class="ot">    many  ::</span> f a <span class="ot">-&gt;</span> f [a]</span></code></pre></div>
 </div><div class="column" style="width:45%;">
 <div>
+<p><strong>Components of a Regular Language</strong></p>
 <ol type="1">
 <li class="fragment">Empty language: <code>empty</code></li>
 <li class="fragment">Empty string: <code>pure x</code></li>
