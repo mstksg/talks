@@ -604,4 +604,4 @@ Is this you?
 *   Functor Combinatorpedia: <https://blog.jle.im/entry/functor-combinatorpedia.html>
 *   *free*: <https://hackage.haskell.org/package/free>
 *   *functor-combinators*: <https://hackage.haskell.org/package/functor-combinators>
-*   Slides: <https://talks.jle.im/composeconf-2019/free-alternative.md>
+*   Slides: <https://talks.jle.im/composeconf-2019/>
