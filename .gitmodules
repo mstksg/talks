@@ -7,3 +7,6 @@
 [submodule "kievfprog/reveal.js"]
 	path = kievfprog/reveal.js
 	url = https://github.com/hakimel/reveal.js/
+[submodule "composeconf-2019/reveal.js"]
+	path = composeconf-2019/reveal.js
+	url = https://github.com/hakimel/reveal.js/
