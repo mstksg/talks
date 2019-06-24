@@ -10,7 +10,7 @@ annotated when possible.
 -   [Slides (HTML)](http://talks.jle.im/composeconf-2019/free-alternative.html "Slides (HTML)")
 -   [Slides (PDF)](http://talks.jle.im/composeconf-2019/free-alternative.pdf "Slides (PDF)")
 -   [Markdown Source](https://github.com/mstksg/talks/tree/master/composeconf-2019/free-alternative.md "Markdown Source")
--   [Source post](https://blog.jle.im/entry/free-alternative-regexp.html "Source post")
+-   [Blog post](https://blog.jle.im/entry/free-alternative-regexp.html "Blog post")
 
 > Free Structures – including Free Monoids and Free Monads – are a great
 > example of a tool from mathematics that have been shown to be very
