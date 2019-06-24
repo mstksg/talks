@@ -97,7 +97,7 @@ Doesn't match:
 "Type-indexed" regular expressions.
 
 ```haskell
-type Regexp a
+type RegExp a
          -- ^ type of "result"
 ```
 
@@ -155,7 +155,7 @@ Nothing
 ```haskell
 myRegexp2 :: RegExp (Bool, Int)
 myRegexp2 = (,) <$> ((False <$ char 'a') <|> (True <$ char 'b'))
-                <*> fmap lengnth (many (string "cd"))
+                <*> fmap length (many (string "cd"))
                 <*  char 'e'
 ```
 
@@ -392,9 +392,12 @@ Max 4
 ## What is freeness?
 
 ```haskell
-type Alt a
+type Alt f a
 
+-- | Analog to (:[])
 liftAlt :: f a -> Alt f a
+
+-- | Analog to foldMap
 runAlt  :: Alternative g
         => (forall b. f a -> g a)
         -> (Alt f a -> g a)
@@ -475,6 +478,8 @@ matchPrefix re = evalStateT (runAlt processPrim re)
       put ds
       pure x
 ```
+
+Fits in a tweet!
 
 ## What just happened?
 
