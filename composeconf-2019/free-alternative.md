@@ -7,10 +7,8 @@
 Slide available at
 <https://mstksg.github.io/talks/composeconf-2019/free-alternative.md>.
 
-All code available at
-<https://github.com/mstksg/talks/tree/master/composeconf-2019/free-alternative>.
-
 ## Regular Expressions
+
 
 :::::: {.columns}
 
@@ -51,6 +49,7 @@ Doesn't match:
 ::::::
 
 ## Captures
+
 
 :::::: {.columns}
 
@@ -544,3 +543,4 @@ Is this you?
 
 *   Blog post: <https://blog.jle.im/entry/free-applicative-regexp.html>
 *   Functor Combinatorpedia: <https://blog.jle.im/entry/functor-combinatorpedia.html>
+*   Slides: <https://mstksg.github.io/talks/composeconf-2019/free-alternative.md>
