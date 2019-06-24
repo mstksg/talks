@@ -7,8 +7,7 @@ date: C◦mp◦se 2019, June 24
 
 ## Preface
 
-Slide available at
-<https://mstksg.github.io/talks/composeconf-2019/free-alternative.md>.
+Slide available at <https://talks.jle.im>.
 
 ## Regular Expressions
 
@@ -546,4 +545,4 @@ Is this you?
 
 *   Blog post: <https://blog.jle.im/entry/free-applicative-regexp.html>
 *   Functor Combinatorpedia: <https://blog.jle.im/entry/functor-combinatorpedia.html>
-*   Slides: <https://mstksg.github.io/talks/composeconf-2019/free-alternative.md>
+*   Slides: <https://talks.jle.im/composeconf-2019/free-alternative.md>

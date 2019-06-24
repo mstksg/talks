@@ -4,7 +4,7 @@
 
 ## Preface
 
-Slide available at <https://mstksg.github.io/talks/lambdaconf-2017/singletons/singleton-slides.html>.
+Slide available at <https://talks.jle.im/lambdaconf-2017/singletons/singleton-slides.html>.
 
 . . .
 

@@ -5,7 +5,7 @@
 ## Preface
 
 Slide available at
-<https://mstksg.github.io/talks/lambdaconf-2017/dependent-types/dependent-types.html>.
+<https://talks.jle.im/lambdaconf-2017/dependent-types/dependent-types.html>.
 
 All code available at
 <https://github.com/mstksg/talks/tree/master/lambdaconf-2017/dependent-types>.

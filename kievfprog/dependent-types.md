@@ -5,7 +5,7 @@
 ## Preface
 
 Slide available at
-<https://mstksg.github.io/talks/kievfprog/dependent-types.html>.
+<https://talks.jle.im/kievfprog/dependent-types.html>.
 
 All code available at
 <https://github.com/mstksg/talks/tree/master/kievfprog>.
