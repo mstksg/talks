@@ -170,13 +170,13 @@ runRegexp myRegexp2 "bcde"
 Just (True, 1)
 ```
 
-## What's so Regular?
+## What's so Regular about Regexps?
 
 . . .
 
 **Regular Language Base Members**
 
-1.  Empty set: Always fails to match
+1.  Empty language: Always fails to match
 2.  Empty string: Always succeeds, consumes nothing
 3.  Literal: Matches and consumes a given char
 
@@ -215,16 +215,42 @@ class Applicative f => Alternative f where
 ## An Alternative Perspective
 
 
+:::::::::{.columns}
+
+:::{.column width="55%"}
+
+```haskell
+class Functor f => Applicative f where
+    -- | Always succeed, consuming nothing
+    pure  :: a -> f a
+    -- | Concatenation
+    (<*>) :: f (a -> b) -> f a -> f b
+
+class Applicative f => Alternative f where
+    -- | Always fails to match
+    empty :: f a
+    -- | Alternation
+    (<|>) :: f a -> f a -> f a
+    -- | Reptition
+    many  :: f a -> f [a]
+```
+
+:::
+
+::::::{.column width="45%"}
+
 ::: incremental
 
-1.  Empty set: `empty`
+1.  Empty language: `empty`
 2.  Empty string: `pure x`
 3.  Literal: ???
 4.  Concatenation: `<*>`
 5.  Alternation: `<|>`
 6.  Repetition: `many`
-
 :::
+::::::
+:::::::::
+
 
 ## Functor combinator-style
 
@@ -244,16 +270,23 @@ class Applicative f => Alternative f where
 ## Easy as 1, 2, 3
 
 ```haskell
+-- | Free Alternative, from 'free'
+data Alt :: (Type -> Type) -> (Type -> Type)
+          -- ^ take a Functor; ^ return a Functor
+instance Functor     (Alt f)
+instance Applicative (Alt f)
+instance Alternative (Alt f)
+
+liftAlt :: Prim a -> Alt Prim
+```
+
+. . .
+
+```haskell
 data Prim a = Prim Char a
   deriving Functor
 
-data Alt :: (Type -> Type) -> (Type -> Type)
-          -- ^ take a Functor
-                            -- ^ return a Functor
-
 type RegExp = Alt Prim
-
-liftAlt :: Prim a -> Alt Prim
 
 char :: Char -> RegExp Char
 char c = liftAlt (Prim c c)
@@ -295,10 +328,21 @@ Options:
 . . .
 
 ```haskell
-type FreeMonoid = []
+class Semigroup m where
+    (<>)   :: m -> m -> m
+class Monoid m where
+    mempty :: m
+
+type FreeMonoid = [] :: Type        -> Type
+                     -- ^ take a type; ^ return a type
+instance Semigroup (FreeMonoid a)
+instance Monoid    (FreeMonoid a)
 
 injectFM :: a -> FreeMonoid a
 runFM    :: Monoid m => (a -> m) -> (FreeMonoid a -> m)
+
+runFM f
+   -- ^ substitute injectFM for f
 ```
 
 . . .
@@ -312,27 +356,30 @@ foldMap :: Monoid m => (a -> m) -> ([a] -> m)
 
 ```haskell
 myMon :: FreeMonoid Int
-myMon = [1] <> [2] <> [3] <> [4]
+myMon = injectFM 1 <> mempty <> injectF1 2 <> injectF1 3 <> injectF1 4
 ```
 
 . . .
 
 ```haskell
-foldMap Sum myMon
+foldMap Sum myMon       -- mempty = 0, <> = +
+Sum 1 + Sum 0 + Sum 2 + Sum 3 + Sum 4
 Sum 10
 ```
 
 . . .
 
 ```haskell
-foldMap Product myMon
+foldMap Product myMon   -- mempty = 1, <> = *
+Product 1 * Product 1 * Product 2 * Product 3 * Product 4
 Product 24
 ```
 
 . . .
 
 ```haskell
-foldMap Max myMon
+foldMap Max myMon       -- mempty = minBound, <> = max
+Max 1 `max` Max minBound `max` Max 2 `max` Max 3 `max` Max 4
 Max 4
 ```
 
@@ -345,7 +392,22 @@ liftAlt :: f a -> Alt f a
 runAlt  :: Alternative g
         => (forall b. f a -> g a)
         -> (Alt f a -> g a)
+
+
+runAlt f
+    -- ^ substitute liftAlt for f
 ```
+
+## Goal
+
+Find an `Alternative` where:
+
+::: incremental
+
+*   `Prim a` = consumption
+*   `<*>` = sequencing consumption
+*   `<|>` = backtracking
+:::
 
 ## Hijacking StateT
 
@@ -353,9 +415,9 @@ runAlt  :: Alternative g
 StateT [Char] Maybe
 ```
 
-*   `Prim a` can be interpreted as *consumption*
-*   `<*>` sequences consumption
-*   `<|>` is backtracking
+*   `Prim a` can be interpreted as *consumption* of state
+*   `<*>` sequences consumption of state
+*   `<|>` is backtracking of state
 
 ## Hijacking StateT
 
@@ -424,20 +486,15 @@ matchPrefix re = evalStateT (runAlt processPrim re)
 
 1.  Interpretation-invariant structure
 2.  Actually meaningful types
+    *   `StateT String Maybe` is **not** a regular expression type.
+
+        ```haskell
+        notARegexp :: StateT String Maybe ()
+        notARegexp = put "hello"        -- no regular expression
+        ```
+
+    *   `Alt Prim` **is** a regular expression type.
 :::
-
-## What do we gain
-
-`StateT String Maybe` is **not** a regular expression type.
-
-```haskell
-notARegexp :: StateT String Maybe ()
-notARegexp = put "hello"        -- no regular expression
-```
-
-. . .
-
-`Alt Prim` **is** a regular expression type
 
 ## Direct matching
 
@@ -545,4 +602,6 @@ Is this you?
 
 *   Blog post: <https://blog.jle.im/entry/free-applicative-regexp.html>
 *   Functor Combinatorpedia: <https://blog.jle.im/entry/functor-combinatorpedia.html>
+*   *free*: <https://hackage.haskell.org/package/free>
+*   *functor-combinators*: <https://hackage.haskell.org/package/functor-combinators>
 *   Slides: <https://talks.jle.im/composeconf-2019/free-alternative.md>
