@@ -30,7 +30,7 @@ subdirs:
         path: free-alternative.pdf
       - text: Markdown Source
         path: https://github.com/mstksg/talks/tree/master/composeconf-2019/free-alternative.md
-      - text: Source post
+      - text: Source blog post
         path: https://blog.jle.im/entry/free-alternative-regexp.html
   - dir: kievfprog
     title: Dependently Typed Programming Introduction (at Kiev Functional programming)
