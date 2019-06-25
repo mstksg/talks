@@ -179,6 +179,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div class="fragment">
 <div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="ot">runRegexp ::</span> <span class="dt">RegExp</span> a <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a</span></code></pre></div>
+<aside class="notes">
+<p>By adding a type index to our regular expression type, we get to be type-safe on <code>runRegexp</code>.</p>
+</aside>
 </div>
 </section>
 <section id="applicative-regular-expressions-1" class="slide level2">

@@ -114,6 +114,13 @@ string :: String -> RegExp String
 runRegexp :: RegExp a -> String -> Maybe a
 ```
 
+::: notes
+
+By adding a type index to our regular expression type, we get to be type-safe
+on `runRegexp`.
+
+:::
+
 ## Applicative Regular Expressions
 
 ```haskell
