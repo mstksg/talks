@@ -25,8 +25,8 @@ annotated when possible.
 > what makes free structures (of all types) such a powerful tool for
 > programming.
 
-Talk given at [C◦mp◦se
-Conference](https://www.composeconference.org/2019/), in New York City.
+Talk given at [C◦mp◦se Conference
+2019](https://www.composeconference.org/2019/), in New York City.
 
 [Dependently Typed Programming Introduction (at Kiev Functional programming)](http://talks.jle.im/kievfprog "Dependently Typed Programming Introduction (at Kiev Functional programming)")
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
