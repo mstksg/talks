@@ -1,4 +1,5 @@
-
+.out-dhall
+.history
 scratch.*
 scratch/*
 /.shake
