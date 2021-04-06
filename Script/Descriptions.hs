@@ -22,8 +22,8 @@ import           Text.Pandoc
 import qualified Data.Text             as T
 
 data DescrT d = Descr { descrPath  :: FilePath
-                      , descrTitle :: String
-                      , descrDesc  :: Maybe String
+                      , descrTitle :: T.Text
+                      , descrDesc  :: Maybe T.Text
                       , descrNode  :: DescrNode d
                       }
   deriving (Show, Functor)
@@ -32,7 +32,7 @@ data DescrNode d = DescrFiles [DescrLink]
                  | DescrDir   [d]
   deriving (Show, Functor)
 
-data DescrLink = DL { dlText :: String, dlPath :: FilePath }
+data DescrLink = DL { dlText :: T.Text, dlPath :: FilePath }
   deriving (Show, Generic)
 
 instance FromJSON d => FromJSON (DescrT d) where
@@ -58,7 +58,7 @@ instance FromJSON Descr where
 type Descr = Fix DescrT
 
 data Section = Sec { secLevel :: Int
-                   , secTitle :: String
+                   , secTitle :: T.Text
                    , secPath  :: FilePath
                    , secLinks :: [DescrLink]
                    , secBody  :: [Block]
@@ -71,7 +71,7 @@ flattenDescr = cata $ \case
       let links = case descrNode of
                     DescrFiles fs -> fs
                     DescrDir   _  -> []
-          descr = maybe [] parseDescr descrDesc
+          descr = maybe [] parseDescr (T.unpack <$> descrDesc)
           newSec = Sec 1 descrTitle descrPath links descr
           oldSecs = case descrNode of
             DescrFiles _  -> []
@@ -81,7 +81,7 @@ flattenDescr = cata $ \case
     parseDescr :: String -> [Block]
     parseDescr d = case runPure (readMarkdown def (T.pack d)) of
         Right (Pandoc _ bs) -> bs
-        Left e              -> [Para [Str (show e)]]
+        Left e              -> [Para [Str (T.pack (show e))]]
     bumpSection :: FilePath -> Section -> Section
     bumpSection fp s@Sec{..} = s
       { secLevel = secLevel + 1
@@ -106,12 +106,12 @@ toBlocks baseURL upLink Sec{..} =
     upLinkBlock = do
       guard (secLevel == 1)
       DL{..} <- upLink
-      return $ Para [Emph [Link nullAttr [Str "(up)"] (baseURL </> dlPath, dlText)]]
+      return $ Para [Emph [Link nullAttr [Str "(up)"] (T.pack $ baseURL </> dlPath, dlText)]]
     links = BulletList . flip map secLinks $ \DL{..} ->
-        [Plain [Link nullAttr [Str dlText] ((baseURL </> secPath) <://> dlPath, dlText)]]
+        [Plain [Link nullAttr [Str dlText] (T.pack $ (baseURL </> secPath) <://> dlPath, dlText)]]
     title | secLevel == 1 = Str secTitle
           | otherwise     = Link nullAttr [Str secTitle]
-                              (baseURL </> secPath, secTitle)
+                              (T.pack $ baseURL </> secPath, secTitle)
 
 descrPandoc :: FilePath -> Maybe DescrLink -> Descr -> Pandoc
 descrPandoc baseURL upLink =
@@ -134,7 +134,7 @@ unfoldDescr = para $ \case
       in  (descrPath, (Nothing, Fix newDescr)) : oldDescrs
   where
     bumpSub
-        :: String
+        :: T.Text
         -> FilePath
         -> (FilePath, (Maybe DescrLink, Descr))
         -> (FilePath, (Maybe DescrLink, Descr))

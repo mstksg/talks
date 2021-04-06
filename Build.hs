@@ -1,10 +1,10 @@
 #!/usr/bin/env stack
--- stack --install-ghc runghc --package shake --package pandoc --package aeson --package yaml --package recursion-schemes --resolver nightly-2019-06-21
+-- stack --install-ghc runghc --package shake --package pandoc --package aeson --package yaml --package recursion-schemes --resolver lts-16.31
 
-{-# LANGUAGE TupleSections    #-}
-{-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE ViewPatterns     #-}
-{-# OPTIONS_GHC -Wall         #-}
+{-# LANGUAGE TupleSections     #-}
+{-# LANGUAGE TypeApplications  #-}
+{-# LANGUAGE ViewPatterns      #-}
+{-# OPTIONS_GHC -Wall          #-}
 
 import           Control.Monad
 import           Data.Foldable
